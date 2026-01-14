@@ -3,12 +3,31 @@
 # This file handles PATH modifications for both macOS and Linux
 
 # Ensure PATH is initialized (safety check)
+# Preserve existing PATH or initialize with system defaults
 if [ -z "$PATH" ]; then
     # Initialize with system defaults based on OS
     if [[ "$OSTYPE" == "darwin"* ]]; then
         export PATH="/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/opt/homebrew/bin"
     else
         export PATH="/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin"
+    fi
+else
+    # PATH exists, ensure critical system paths are present (add if missing)
+    # Don't use 'local' in sourced scripts - use regular variables
+    if [[ "$OSTYPE" == "darwin"* ]]; then
+        # macOS: ensure system paths are in PATH
+        for sys_path in /usr/local/bin /usr/bin /bin /usr/sbin /sbin /opt/homebrew/bin; do
+            if [[ ":$PATH:" != *":$sys_path:"* ]] && [ -d "$sys_path" ]; then
+                export PATH="$sys_path:$PATH"
+            fi
+        done
+    else
+        # Linux: ensure system paths are in PATH
+        for sys_path in /usr/local/bin /usr/bin /bin /usr/sbin /sbin; do
+            if [[ ":$PATH:" != *":$sys_path:"* ]] && [ -d "$sys_path" ]; then
+                export PATH="$sys_path:$PATH"
+            fi
+        done
     fi
 fi
 
