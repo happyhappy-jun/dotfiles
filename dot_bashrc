@@ -127,19 +127,26 @@ if [ -f "$HOME/.git-completion.bash" ]; then
 fi
 
 # ============================================================================
-# Prompt Customization (Lightweight)
+# Prompt Customization
 # ============================================================================
 
-# Simple prompt - can be enhanced with starship or other tools
-# For better prompts, consider lazy loading starship
-if command -v starship >/dev/null 2>&1; then
-    # Lazy load starship prompt
-    lazy_load starship -- 'eval "$(starship init bash)"'
-    # Set a simple prompt until starship is loaded
-    export PS1='\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]\$ '
+# Load Pure-inspired prompt for bash
+# Falls back to simple prompt if Pure prompt script is not available
+if [ -f "$COMMON_DIR/prompts/pure_bash.sh" ]; then
+    source "$COMMON_DIR/prompts/pure_bash.sh"
+elif [ -f "$HOME/.common/prompts/pure_bash.sh" ]; then
+    source "$HOME/.common/prompts/pure_bash.sh"
+elif [ -f "$HOME/dot_common/prompts/pure_bash.sh" ]; then
+    source "$HOME/dot_common/prompts/pure_bash.sh"
 else
-    # Colorful prompt
-    export PS1='\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]\$ '
+    # Fallback: Try starship if available
+    if command -v starship >/dev/null 2>&1; then
+        lazy_load starship -- 'eval "$(starship init bash)"'
+        export PS1='\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]\$ '
+    else
+        # Simple colorful prompt
+        export PS1='\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]\$ '
+    fi
 fi
 
 # ============================================================================

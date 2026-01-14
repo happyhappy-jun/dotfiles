@@ -165,16 +165,23 @@ _load_common_config
 # Prompt Customization
 # ============================================================================
 
-# Simple prompt - can be enhanced with starship or other tools
-# For better prompts, consider lazy loading starship
-if command -v starship >/dev/null 2>&1; then
-    # Lazy load starship prompt
-    lazy_load starship -- 'eval "$(starship init zsh)"'
-    # Set a simple prompt until starship is loaded
-    PROMPT='%F{green}%n@%m%f:%F{blue}%~%f$ '
+# Load Pure prompt (https://github.com/sindresorhus/pure)
+# Falls back to simple prompt if Pure is not available
+if [ -f "$COMMON_DIR/prompts/pure_zsh.sh" ]; then
+    source "$COMMON_DIR/prompts/pure_zsh.sh"
+elif [ -f "$HOME/.common/prompts/pure_zsh.sh" ]; then
+    source "$HOME/.common/prompts/pure_zsh.sh"
+elif [ -f "$HOME/dot_common/prompts/pure_zsh.sh" ]; then
+    source "$HOME/dot_common/prompts/pure_zsh.sh"
 else
-    # Colorful prompt
-    PROMPT='%F{green}%n@%m%f:%F{blue}%~%f$ '
+    # Fallback: Try starship if available
+    if command -v starship >/dev/null 2>&1; then
+        lazy_load starship -- 'eval "$(starship init zsh)"'
+        PROMPT='%F{green}%n@%m%f:%F{blue}%~%f$ '
+    else
+        # Simple colorful prompt
+        PROMPT='%F{green}%n@%m%f:%F{blue}%~%f$ '
+    fi
 fi
 
 # ============================================================================

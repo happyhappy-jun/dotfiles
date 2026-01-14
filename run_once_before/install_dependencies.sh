@@ -47,6 +47,16 @@ elif [ "$IS_LINUX" = true ]; then
     fi
 fi
 
+# Install Pure prompt for zsh (optional but recommended)
+if [ "$IS_MACOS" = true ]; then
+    if command -v brew >/dev/null 2>&1; then
+        echo "Installing Pure prompt for zsh..."
+        brew install pure 2>/dev/null || {
+            echo "Pure not available via Homebrew. Will clone from GitHub on first use."
+        }
+    fi
+fi
+
 # Install starship prompt (optional but recommended)
 if ! command -v starship >/dev/null 2>&1; then
     echo "Starship prompt not found. Install it from https://starship.rs"
@@ -55,3 +65,6 @@ fi
 
 echo "Dependency installation complete!"
 echo "Note: Some packages may require manual installation."
+echo ""
+echo "Pure prompt will be automatically cloned to ~/.zsh/pure on first use (zsh only)."
+echo "Bash users will get a Pure-inspired prompt automatically."
