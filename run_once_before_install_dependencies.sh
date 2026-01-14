@@ -34,13 +34,16 @@ if [ "$IS_MACOS" = true ]; then
 elif [ "$IS_LINUX" = true ]; then
     echo "Detected Linux"
     
-    # Check if sudo is available
+    # Check if current user is in sudoers group
     HAS_SUDO=false
-    if command -v sudo >/dev/null 2>&1 && sudo -n true 2>/dev/null; then
-        HAS_SUDO=true
-    elif command -v sudo >/dev/null 2>&1; then
-        # sudo exists but may require password - check if we can use it
-        HAS_SUDO=true
+    if command -v sudo >/dev/null 2>&1; then
+        # Check if user is in sudo or wheel group
+        if groups | grep -qE '\b(sudo|wheel)\b' 2>/dev/null; then
+            HAS_SUDO=true
+        # Also check if sudo -n works (passwordless sudo)
+        elif sudo -n true 2>/dev/null; then
+            HAS_SUDO=true
+        fi
     fi
     
     # Install utilities based on package manager

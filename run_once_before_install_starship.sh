@@ -45,13 +45,24 @@ if command -v starship >/dev/null 2>&1; then
     exit 0
 fi
 
-# Check if sudo is available
+# Check if current user is in sudoers group
 HAS_SUDO=false
-if command -v sudo >/dev/null 2>&1 && sudo -n true 2>/dev/null; then
-    HAS_SUDO=true
-elif command -v sudo >/dev/null 2>&1; then
-    # sudo exists but may require password - we'll try but won't fail if it requires password
-    HAS_SUDO=true
+if command -v sudo >/dev/null 2>&1; then
+    if [ "$IS_MACOS" = true ]; then
+        # macOS: Check if user is in admin or wheel group
+        if groups | grep -qE '\b(admin|wheel)\b' 2>/dev/null; then
+            HAS_SUDO=true
+        elif sudo -n true 2>/dev/null; then
+            HAS_SUDO=true
+        fi
+    elif [ "$IS_LINUX" = true ]; then
+        # Linux: Check if user is in sudo or wheel group
+        if groups | grep -qE '\b(sudo|wheel)\b' 2>/dev/null; then
+            HAS_SUDO=true
+        elif sudo -n true 2>/dev/null; then
+            HAS_SUDO=true
+        fi
+    fi
 fi
 
 # Try to install using package managers first (Linux only)
