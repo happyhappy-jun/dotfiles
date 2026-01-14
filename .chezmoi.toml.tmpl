@@ -18,9 +18,9 @@
     sourceDir = "{{ .chezmoi.sourceDir }}"
     
     # Machine-specific variables (can be overridden in ~/.config/chezmoi/chezmoi.toml)
-    email = "{{ .email | default \"\" }}"
-    name = "{{ .name | default \"\" }}"
-    gitUser = "{{ .gitUser | default \"\" }}"
+    email = "{{ .email | default "" }}"
+    name = "{{ .name | default "" }}"
+    gitUser = "{{ .gitUser | default "" }}"
 
 [git]
     # Auto commit changes
