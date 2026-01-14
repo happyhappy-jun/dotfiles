@@ -211,19 +211,18 @@ _load_common_config
 # Prompt Customization
 # ============================================================================
 
-# Load Pure prompt (https://github.com/sindresorhus/pure)
-# Falls back to simple prompt if Pure is not available
-if [ -n "$COMMON_DIR" ] && [ -f "$COMMON_DIR/prompts/pure_zsh.sh" ]; then
-    source "$COMMON_DIR/prompts/pure_zsh.sh"
-elif [ -f "$HOME/.common/prompts/pure_zsh.sh" ]; then
-    source "$HOME/.common/prompts/pure_zsh.sh"
-elif [ -f "$HOME/dot_common/prompts/pure_zsh.sh" ]; then
-    source "$HOME/dot_common/prompts/pure_zsh.sh"
+# Load Starship prompt (https://starship.rs/)
+# Uses Pure preset theme for a clean, minimal look
+if [ -n "$COMMON_DIR" ] && [ -f "$COMMON_DIR/prompts/starship.sh" ]; then
+    source "$COMMON_DIR/prompts/starship.sh"
+elif [ -f "$HOME/.common/prompts/starship.sh" ]; then
+    source "$HOME/.common/prompts/starship.sh"
+elif [ -f "$HOME/dot_common/prompts/starship.sh" ]; then
+    source "$HOME/dot_common/prompts/starship.sh"
 else
-    # Fallback: Try starship if available
+    # Fallback: Try starship directly if available
     if command -v starship >/dev/null 2>&1; then
-        lazy_load starship -- 'eval "$(starship init zsh)"'
-        PROMPT='%F{green}%n@%m%f:%F{blue}%~%f$ '
+        eval "$(starship init zsh)"
     else
         # Simple colorful prompt
         PROMPT='%F{green}%n@%m%f:%F{blue}%~%f$ '

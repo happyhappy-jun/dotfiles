@@ -189,19 +189,18 @@ fi
 # Prompt Customization
 # ============================================================================
 
-# Load Pure-inspired prompt for bash
-# Falls back to simple prompt if Pure prompt script is not available
-if [ -n "$COMMON_DIR" ] && [ -f "$COMMON_DIR/prompts/pure_bash.sh" ]; then
-    source "$COMMON_DIR/prompts/pure_bash.sh"
-elif [ -f "$HOME/.common/prompts/pure_bash.sh" ]; then
-    source "$HOME/.common/prompts/pure_bash.sh"
-elif [ -f "$HOME/dot_common/prompts/pure_bash.sh" ]; then
-    source "$HOME/dot_common/prompts/pure_bash.sh"
+# Load Starship prompt (https://starship.rs/)
+# Uses Pure preset theme for a clean, minimal look
+if [ -n "$COMMON_DIR" ] && [ -f "$COMMON_DIR/prompts/starship.sh" ]; then
+    source "$COMMON_DIR/prompts/starship.sh"
+elif [ -f "$HOME/.common/prompts/starship.sh" ]; then
+    source "$HOME/.common/prompts/starship.sh"
+elif [ -f "$HOME/dot_common/prompts/starship.sh" ]; then
+    source "$HOME/dot_common/prompts/starship.sh"
 else
-    # Fallback: Try starship if available
+    # Fallback: Try starship directly if available
     if command -v starship >/dev/null 2>&1; then
-        lazy_load starship -- 'eval "$(starship init bash)"'
-        export PS1='\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]\$ '
+        eval "$(starship init bash)"
     else
         # Simple colorful prompt
         export PS1='\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]\$ '

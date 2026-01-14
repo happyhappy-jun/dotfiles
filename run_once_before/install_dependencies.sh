@@ -47,20 +47,28 @@ elif [ "$IS_LINUX" = true ]; then
     fi
 fi
 
-# Install Pure prompt for zsh (optional but recommended)
-if [ "$IS_MACOS" = true ]; then
-    if command -v brew >/dev/null 2>&1; then
-        echo "Installing Pure prompt for zsh..."
-        brew install pure 2>/dev/null || {
-            echo "Pure not available via Homebrew. Will clone from GitHub on first use."
-        }
+# Install Starship prompt (recommended)
+# Starship is the primary prompt system used in this dotfiles setup
+if ! command -v starship >/dev/null 2>&1; then
+    echo "Installing Starship prompt..."
+    if [ -f "$(chezmoi source-path 2>/dev/null)/run_once_before/install_starship.sh" ]; then
+        bash "$(chezmoi source-path)/run_once_before/install_starship.sh"
+    elif [ -f "$HOME/.local/share/chezmoi/run_once_before/install_starship.sh" ]; then
+        bash "$HOME/.local/share/chezmoi/run_once_before/install_starship.sh"
+    else
+        echo "Starship installation script not found. Install manually from https://starship.rs"
+        echo "Or run: curl -sS https://starship.rs/install.sh | sh"
     fi
 fi
 
-# Install starship prompt (optional but recommended)
-if ! command -v starship >/dev/null 2>&1; then
-    echo "Starship prompt not found. Install it from https://starship.rs"
-    echo "Or run: curl -sS https://starship.rs/install.sh | sh"
+# Set up Starship configuration with Pure preset
+if command -v starship >/dev/null 2>&1; then
+    echo "Setting up Starship configuration..."
+    if [ -f "$(chezmoi source-path 2>/dev/null)/run_once_before/setup_starship_config.sh" ]; then
+        bash "$(chezmoi source-path)/run_once_before/setup_starship_config.sh"
+    elif [ -f "$HOME/.local/share/chezmoi/run_once_before/setup_starship_config.sh" ]; then
+        bash "$HOME/.local/share/chezmoi/run_once_before/setup_starship_config.sh"
+    fi
 fi
 
 echo "Dependency installation complete!"
