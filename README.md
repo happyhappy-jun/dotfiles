@@ -401,26 +401,65 @@ If tmux configuration is not loading:
 
 ## Prompt Theme
 
-### Pure Prompt
+### Starship Prompt
 
-This dotfiles setup includes the [Pure prompt](https://github.com/sindresorhus/pure) for zsh and a Pure-inspired prompt for bash.
+This dotfiles setup uses [Starship](https://starship.rs/) - a fast, customizable, cross-shell prompt that works on any shell and operating system.
 
-**For Zsh (macOS):**
-- Pure prompt is automatically cloned from GitHub on first use
-- Located at `~/.zsh/pure/`
-- Features: Git status, branch info, execution time, minimal design
+**Features:**
+- **Cross-shell**: Works seamlessly on both zsh and bash
+- **Pure Preset**: Configured with the Pure preset theme for a clean, minimal look
+- **Fast**: Blazing-fast prompt rendering
+- **Intelligent**: Shows relevant information (git status, directory, execution time, etc.)
+- **Customizable**: Easy to customize via `~/.config/starship.toml`
 
-**For Bash (Linux):**
-- Pure-inspired prompt with similar features
-- Shows git branch, dirty status, and arrows
-- Minimal, clean design matching Pure's aesthetic
+**Installation:**
 
-**Customization:**
-- Pure (zsh): Configure via `zstyle` commands in `~/.zshrc.local`
-- Pure-inspired (bash): Edit `~/.common/prompts/pure_bash.sh`
+Starship is automatically installed on first use via `run_once_before/install_starship.sh`. You can also install it manually:
+
+```bash
+# Run the installation script
+bash ~/.local/share/chezmoi/run_once_before/install_starship.sh
+
+# Set up Pure preset configuration
+bash ~/.local/share/chezmoi/run_once_before/setup_starship_config.sh
+```
+
+Or install manually from [Starship installation guide](https://starship.rs/guide/).
+
+**Configuration:**
+
+The Pure preset is automatically configured. To customize Starship:
+
+1. **Edit the config file**:
+   ```bash
+   chezmoi edit ~/.config/starship.toml
+   ```
+
+2. **Or use Starship presets**:
+   ```bash
+   # List available presets
+   starship preset --list
+   
+   # Apply a preset
+   starship preset <preset-name> -o ~/.config/starship.toml
+   ```
+
+3. **View current config**:
+   ```bash
+   starship config
+   ```
+
+**Pure Preset Details:**
+
+The Pure preset emulates the look and behavior of Pure prompt:
+- Minimal, clean design
+- Git branch and status information
+- Execution time display
+- Python virtual environment support
+- Color-coded prompt symbol (purple for success, red for errors)
 
 **Fallback:**
-- If Pure fails to load, falls back to Starship (if installed) or simple prompt
+- If Starship is not installed, falls back to a simple colorful prompt
 
 ## History Substring Search
 
