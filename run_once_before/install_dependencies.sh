@@ -2,8 +2,7 @@
 # One-time setup script for installing dependencies
 # This script can be run manually or via chezmoi run_once_before
 
-# Don't exit on error - we want to continue even if some installations fail
-set +e
+set -e
 
 echo "Installing dotfiles dependencies..."
 
@@ -34,43 +33,17 @@ if [ "$IS_MACOS" = true ]; then
 elif [ "$IS_LINUX" = true ]; then
     echo "Detected Linux"
     
-    # Check if current user is in sudoers group
-    HAS_SUDO=false
-    if command -v sudo >/dev/null 2>&1; then
-        # Check if user is in sudo or wheel group
-        if groups | grep -qE '\b(sudo|wheel)\b' 2>/dev/null; then
-            HAS_SUDO=true
-        # Also check if sudo -n works (passwordless sudo)
-        elif sudo -n true 2>/dev/null; then
-            HAS_SUDO=true
-        fi
-    fi
-    
     # Install utilities based on package manager
     if command -v apt >/dev/null 2>&1; then
-        if [ "$HAS_SUDO" = true ]; then
-            echo "Installing Linux utilities (apt)..."
-            sudo apt update && sudo apt install -y neofetch htop xclip tmux || true
-        else
-            echo "Skipping apt package installation (sudo not available or requires password)"
-            echo "You can install manually: apt install neofetch htop xclip tmux"
-        fi
+        echo "Installing Linux utilities (apt)..."
+        sudo apt update
+        sudo apt install -y neofetch htop xclip tmux || true
     elif command -v yum >/dev/null 2>&1; then
-        if [ "$HAS_SUDO" = true ]; then
-            echo "Installing Linux utilities (yum)..."
-            sudo yum install -y neofetch htop xclip tmux || true
-        else
-            echo "Skipping yum package installation (sudo not available or requires password)"
-            echo "You can install manually: yum install neofetch htop xclip tmux"
-        fi
+        echo "Installing Linux utilities (yum)..."
+        sudo yum install -y neofetch htop xclip tmux || true
     elif command -v dnf >/dev/null 2>&1; then
-        if [ "$HAS_SUDO" = true ]; then
-            echo "Installing Linux utilities (dnf)..."
-            sudo dnf install -y neofetch htop xclip tmux || true
-        else
-            echo "Skipping dnf package installation (sudo not available or requires password)"
-            echo "You can install manually: dnf install neofetch htop xclip tmux"
-        fi
+        echo "Installing Linux utilities (dnf)..."
+        sudo dnf install -y neofetch htop xclip tmux || true
     fi
 fi
 
@@ -91,10 +64,10 @@ fi
 # Set up Starship configuration with Pure preset
 if command -v starship >/dev/null 2>&1; then
     echo "Setting up Starship configuration..."
-    if [ -f "$(chezmoi source-path 2>/dev/null)/run_once_before_setup_starship_config.sh" ]; then
-        bash "$(chezmoi source-path)/run_once_before_setup_starship_config.sh"
-    elif [ -f "$HOME/.local/share/chezmoi/run_once_before_setup_starship_config.sh" ]; then
-        bash "$HOME/.local/share/chezmoi/run_once_before_setup_starship_config.sh"
+    if [ -f "$(chezmoi source-path 2>/dev/null)/run_once_before/setup_starship_config.sh" ]; then
+        bash "$(chezmoi source-path)/run_once_before/setup_starship_config.sh"
+    elif [ -f "$HOME/.local/share/chezmoi/run_once_before/setup_starship_config.sh" ]; then
+        bash "$HOME/.local/share/chezmoi/run_once_before/setup_starship_config.sh"
     fi
 fi
 
