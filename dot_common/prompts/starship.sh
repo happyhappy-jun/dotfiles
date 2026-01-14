@@ -3,11 +3,72 @@
 # This file initializes Starship prompt (https://starship.rs/)
 # Uses Pure preset theme for a clean, minimal look
 
+# Function to install Starship if not present
+_install_starship() {
+    # Check if Starship is already installed
+    if command -v starship >/dev/null 2>&1; then
+        return 0
+    fi
+    
+    echo "Starship not found. Installing Starship..."
+    
+    # Try to find and run the installation script
+    local install_script=""
+    for script_path in \
+        "$HOME/.local/share/chezmoi/run_once_before/install_starship.sh" \
+        "$(chezmoi source-path 2>/dev/null)/run_once_before/install_starship.sh" \
+        "$HOME/.common/run_once_before/install_starship.sh" \
+        "$HOME/dot_common/run_once_before/install_starship.sh"; do
+        if [ -f "$script_path" ]; then
+            install_script="$script_path"
+            break
+        fi
+    done
+    
+    # If installation script found, run it
+    if [ -n "$install_script" ] && [ -f "$install_script" ]; then
+        bash "$install_script" 2>/dev/null || {
+            # If script fails, try direct installation
+            if command -v curl >/dev/null 2>&1; then
+                curl -sS https://starship.rs/install.sh | sh 2>/dev/null || return 1
+            elif command -v wget >/dev/null 2>&1; then
+                wget -qO- https://starship.rs/install.sh | sh 2>/dev/null || return 1
+            else
+                return 1
+            fi
+        }
+    else
+        # No installation script found, use direct installation
+        if command -v curl >/dev/null 2>&1; then
+            curl -sS https://starship.rs/install.sh | sh 2>/dev/null || return 1
+        elif command -v wget >/dev/null 2>&1; then
+            wget -qO- https://starship.rs/install.sh | sh 2>/dev/null || return 1
+        else
+            return 1
+        fi
+    fi
+    
+    # Ensure ~/.local/bin is in PATH
+    if [[ ":$PATH:" != *":$HOME/.local/bin:"* ]]; then
+        export PATH="$HOME/.local/bin:$PATH"
+    fi
+    
+    # Verify installation
+    if command -v starship >/dev/null 2>&1; then
+        return 0
+    fi
+    
+    return 1
+}
+
 # Function to initialize Starship
 _init_starship() {
-    # Check if Starship is installed
+    # Check if Starship is installed, install if not
     if ! command -v starship >/dev/null 2>&1; then
-        return 1
+        # Try to install Starship
+        if ! _install_starship; then
+            return 1
+        fi
     fi
     
     # Initialize Starship based on shell
