@@ -28,25 +28,52 @@ _load_env_file() {
         
         # Export the variable safely
         # Extract variable name and value
-        if [[ "$line" =~ ^[[:space:]]*([A-Za-z_][A-Za-z0-9_]*)=(.*)$ ]]; then
-            local var_name="${BASH_REMATCH[1]}"
-            local var_value="${BASH_REMATCH[2]}"
-            
-            # Remove leading/trailing whitespace from variable name
-            var_name="${var_name%"${var_name##*[![:space:]]}"}"
-            var_name="${var_name#"${var_name%%[![:space:]]*}"}"
-            
-            # Remove quotes if present (handles both single and double quotes)
-            if [[ "$var_value" =~ ^\".*\"$ ]] || [[ "$var_value" =~ ^\'.*\'$ ]]; then
-                var_value="${var_value:1:-1}"
+        if [ -n "$ZSH_VERSION" ]; then
+            # Zsh regex matching
+            if [[ "$line" =~ ^[[:space:]]*([A-Za-z_][A-Za-z0-9_]*)=(.*)$ ]]; then
+                local var_name="${match[1]}"
+                local var_value="${match[2]}"
+                
+                # Remove leading/trailing whitespace from variable name
+                var_name="${var_name%"${var_name##*[![:space:]]}"}"
+                var_name="${var_name#"${var_name%%[![:space:]]*}"}"
+                
+                # Remove quotes if present (handles both single and double quotes)
+                if [[ "$var_value" =~ ^\".*\"$ ]] || [[ "$var_value" =~ ^\'.*\'$ ]]; then
+                    # Remove first and last character (quotes)
+                    var_value="${var_value#?}"
+                    var_value="${var_value%?}"
+                fi
+                
+                # Remove leading/trailing whitespace from value
+                var_value="${var_value#"${var_value%%[![:space:]]*}"}"
+                var_value="${var_value%"${var_value##*[![:space:]]}"}"
+                
+                # Export the variable
+                export "${var_name}=${var_value}"
             fi
-            
-            # Remove leading/trailing whitespace from value
-            var_value="${var_value#"${var_value%%[![:space:]]*}"}"
-            var_value="${var_value%"${var_value##*[![:space:]]}"}"
-            
-            # Export the variable
-            export "$var_name=$var_value"
+        else
+            # Bash regex matching
+            if [[ "$line" =~ ^[[:space:]]*([A-Za-z_][A-Za-z0-9_]*)=(.*)$ ]]; then
+                local var_name="${BASH_REMATCH[1]}"
+                local var_value="${BASH_REMATCH[2]}"
+                
+                # Remove leading/trailing whitespace from variable name
+                var_name="${var_name%"${var_name##*[![:space:]]}"}"
+                var_name="${var_name#"${var_name%%[![:space:]]*}"}"
+                
+                # Remove quotes if present (handles both single and double quotes)
+                if [[ "$var_value" =~ ^\".*\"$ ]] || [[ "$var_value" =~ ^\'.*\'$ ]]; then
+                    var_value="${var_value:1:-1}"
+                fi
+                
+                # Remove leading/trailing whitespace from value
+                var_value="${var_value#"${var_value%%[![:space:]]*}"}"
+                var_value="${var_value%"${var_value##*[![:space:]]}"}"
+                
+                # Export the variable
+                export "${var_name}=${var_value}"
+            fi
         fi
     done < "$env_file"
     
@@ -101,24 +128,46 @@ env_show() {
     # Show variables that are defined in .env files
     if [ -f "$HOME/.env" ]; then
         while IFS= read -r line || [ -n "$line" ]; do
-            if [[ "$line" =~ ^[[:space:]]*([A-Za-z_][A-Za-z0-9_]*)= ]]; then
-                local var_name="${BASH_REMATCH[1]}"
-                var_name="${var_name%"${var_name##*[![:space:]]}"}"
-                var_name="${var_name#"${var_name%%[![:space:]]*}"}"
-                if [ -n "${!var_name:-}" ]; then
-                    echo "${var_name}=***"
+            if [ -n "$ZSH_VERSION" ]; then
+                if [[ "$line" =~ ^[[:space:]]*([A-Za-z_][A-Za-z0-9_]*)= ]]; then
+                    local var_name="${match[1]}"
+                    var_name="${var_name%"${var_name##*[![:space:]]}"}"
+                    var_name="${var_name#"${var_name%%[![:space:]]*}"}"
+                    if [ -n "${(P)var_name:-}" ]; then
+                        echo "${var_name}=***"
+                    fi
+                fi
+            else
+                if [[ "$line" =~ ^[[:space:]]*([A-Za-z_][A-Za-z0-9_]*)= ]]; then
+                    local var_name="${BASH_REMATCH[1]}"
+                    var_name="${var_name%"${var_name##*[![:space:]]}"}"
+                    var_name="${var_name#"${var_name%%[![:space:]]*}"}"
+                    if [ -n "${!var_name:-}" ]; then
+                        echo "${var_name}=***"
+                    fi
                 fi
             fi
         done < "$HOME/.env"
     fi
     if [ -f ".env" ]; then
         while IFS= read -r line || [ -n "$line" ]; do
-            if [[ "$line" =~ ^[[:space:]]*([A-Za-z_][A-Za-z0-9_]*)= ]]; then
-                local var_name="${BASH_REMATCH[1]}"
-                var_name="${var_name%"${var_name##*[![:space:]]}"}"
-                var_name="${var_name#"${var_name%%[![:space:]]*}"}"
-                if [ -n "${!var_name:-}" ]; then
-                    echo "${var_name}=***"
+            if [ -n "$ZSH_VERSION" ]; then
+                if [[ "$line" =~ ^[[:space:]]*([A-Za-z_][A-Za-z0-9_]*)= ]]; then
+                    local var_name="${match[1]}"
+                    var_name="${var_name%"${var_name##*[![:space:]]}"}"
+                    var_name="${var_name#"${var_name%%[![:space:]]*}"}"
+                    if [ -n "${(P)var_name:-}" ]; then
+                        echo "${var_name}=***"
+                    fi
+                fi
+            else
+                if [[ "$line" =~ ^[[:space:]]*([A-Za-z_][A-Za-z0-9_]*)= ]]; then
+                    local var_name="${BASH_REMATCH[1]}"
+                    var_name="${var_name%"${var_name##*[![:space:]]}"}"
+                    var_name="${var_name#"${var_name%%[![:space:]]*}"}"
+                    if [ -n "${!var_name:-}" ]; then
+                        echo "${var_name}=***"
+                    fi
                 fi
             fi
         done < ".env"
