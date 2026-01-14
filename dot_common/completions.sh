@@ -350,5 +350,41 @@ else
     fi
 fi
 
+# ============================================================================
+# Conda Completion
+# ============================================================================
+if _has_command conda || [ -d "$HOME/miniconda" ] || [ -d "$HOME/anaconda" ] || [ -d "$HOME/anaconda3" ]; then
+    # Determine conda location
+    local conda_dir=""
+    if [ -d "$HOME/miniconda" ]; then
+        conda_dir="$HOME/miniconda"
+    elif [ -d "$HOME/anaconda" ]; then
+        conda_dir="$HOME/anaconda"
+    elif [ -d "$HOME/anaconda3" ]; then
+        conda_dir="$HOME/anaconda3"
+    fi
+    
+    if [ -n "$conda_dir" ] && [ -f "$conda_dir/etc/profile.d/conda.sh" ]; then
+        if [[ -n "$ZSH_VERSION" ]]; then
+            # Zsh: conda completion
+            if [ -f "$conda_dir/etc/profile.d/conda.sh" ]; then
+                # Conda completion is loaded via conda init, which happens lazily
+                # But we can set up the completion path
+                if [ -d "$conda_dir/etc/profile.d" ]; then
+                    fpath=("$conda_dir/etc/profile.d" $fpath)
+                fi
+            fi
+        else
+            # Bash: conda completion
+            # Conda completion is loaded via conda init, which happens lazily
+            # The completion will be available after conda is initialized
+            if [ -f "$conda_dir/etc/profile.d/conda.sh" ]; then
+                # Completion is handled by conda init
+                :
+            fi
+        fi
+    fi
+fi
+
 # Clean up
 unset -f _load_completion _has_command

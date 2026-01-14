@@ -102,6 +102,7 @@ nvm install node
 - Node Version Manager (nvm)
 - Fast Node Manager (fnm)
 - Python Version Manager (pyenv)
+- Conda (miniconda/anaconda)
 - Ruby Version Manager (rbenv)
 - Rust (cargo)
 - Go

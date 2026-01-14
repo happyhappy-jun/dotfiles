@@ -134,3 +134,33 @@ if [ -d "$HOME/.rbenv" ]; then
     export RBENV_ROOT="$HOME/.rbenv"
     add_to_path "$RBENV_ROOT/bin"
 fi
+
+# Conda paths (miniconda/anaconda)
+# Note: Conda initialization is lazy-loaded, but we can add the base path here
+# for commands that might be called directly
+if [ -d "$HOME/miniconda" ]; then
+    export CONDA_HOME="$HOME/miniconda"
+    # Don't add to PATH here - conda init will handle it
+    # But ensure conda binary is accessible for lazy loading
+    if [ -f "$CONDA_HOME/bin/conda" ]; then
+        # Add conda bin only if not already in PATH (for direct conda calls)
+        if [[ ":$PATH:" != *":$CONDA_HOME/bin:"* ]]; then
+            # We'll let conda init handle PATH, but this ensures conda command is found
+            export CONDA_BIN="$CONDA_HOME/bin/conda"
+        fi
+    fi
+elif [ -d "$HOME/anaconda" ]; then
+    export CONDA_HOME="$HOME/anaconda"
+    if [ -f "$CONDA_HOME/bin/conda" ]; then
+        if [[ ":$PATH:" != *":$CONDA_HOME/bin:"* ]]; then
+            export CONDA_BIN="$CONDA_HOME/bin/conda"
+        fi
+    fi
+elif [ -d "$HOME/anaconda3" ]; then
+    export CONDA_HOME="$HOME/anaconda3"
+    if [ -f "$CONDA_HOME/bin/conda" ]; then
+        if [[ ":$PATH:" != *":$CONDA_HOME/bin:"* ]]; then
+            export CONDA_BIN="$CONDA_HOME/bin/conda"
+        fi
+    fi
+fi

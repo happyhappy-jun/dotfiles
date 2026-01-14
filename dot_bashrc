@@ -97,6 +97,21 @@ if [ -d "$HOME/.go" ]; then
     lazy_load go -- 'export PATH="$HOME/.go/bin:$PATH"'
 fi
 
+# Lazy load Conda (miniconda/anaconda)
+# Conda initialization is slow, so we lazy load it
+if [ -d "$HOME/miniconda" ] && [ -f "$HOME/miniconda/etc/profile.d/conda.sh" ]; then
+    lazy_load conda -- 'source "$HOME/miniconda/etc/profile.d/conda.sh"'
+    # Also lazy load python, pip when conda is used
+    # Note: These will only work after conda is initialized
+    lazy_load_multi python python3 pip pip3 -- 'source "$HOME/miniconda/etc/profile.d/conda.sh"'
+elif [ -d "$HOME/anaconda" ] && [ -f "$HOME/anaconda/etc/profile.d/conda.sh" ]; then
+    lazy_load conda -- 'source "$HOME/anaconda/etc/profile.d/conda.sh"'
+    lazy_load_multi python python3 pip pip3 -- 'source "$HOME/anaconda/etc/profile.d/conda.sh"'
+elif [ -d "$HOME/anaconda3" ] && [ -f "$HOME/anaconda3/etc/profile.d/conda.sh" ]; then
+    lazy_load conda -- 'source "$HOME/anaconda3/etc/profile.d/conda.sh"'
+    lazy_load_multi python python3 pip pip3 -- 'source "$HOME/anaconda3/etc/profile.d/conda.sh"'
+fi
+
 # ============================================================================
 # Source Common Functionality (Lazy Loaded)
 # ============================================================================
