@@ -11,18 +11,19 @@
     shell = "zsh"
     
     # Architecture - will be set automatically by chezmoi
-    # arch = "{{ .arch }}"
+    # (arch variable available but not set here)
     
     # Home directory - will be set automatically by chezmoi
-    # homeDir = "{{ .chezmoi.homeDir }}"
+    # (homeDir variable available but not set here)
     
     # Source directory - will be set automatically by chezmoi
-    # sourceDir = "{{ .chezmoi.sourceDir }}"
+    # (sourceDir variable available but not set here)
     
     # Machine-specific variables (can be overridden in ~/.config/chezmoi/chezmoi.toml)
-    email = "{{ .email | default "" }}"
-    name = "{{ .name | default "" }}"
-    gitUser = "{{ .gitUser | default "" }}"
+    # Set to empty strings by default, override in local config if needed
+    email = ""
+    name = ""
+    gitUser = ""
 
 [git]
     # Auto commit changes
