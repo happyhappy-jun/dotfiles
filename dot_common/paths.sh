@@ -2,6 +2,16 @@
 # PATH management with OS-aware additions
 # This file handles PATH modifications for both macOS and Linux
 
+# Ensure PATH is initialized (safety check)
+if [ -z "$PATH" ]; then
+    # Initialize with system defaults based on OS
+    if [[ "$OSTYPE" == "darwin"* ]]; then
+        export PATH="/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/opt/homebrew/bin"
+    else
+        export PATH="/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin"
+    fi
+fi
+
 # Function to add path if it exists and is not already in PATH
 add_to_path() {
     local new_path="$1"
