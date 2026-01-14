@@ -35,8 +35,9 @@ lazy_load() {
         }"
     elif [ "$SHELL_TYPE" = "bash" ]; then
         # Bash implementation using function wrapper
-        eval "$cmd() {
-            unset -f $cmd
+        # Properly quote the load command to avoid eval issues
+        eval "function $cmd() {
+            unset -f $cmd 2>/dev/null
             $load_cmd
             $cmd \"\$@\"
         }"
