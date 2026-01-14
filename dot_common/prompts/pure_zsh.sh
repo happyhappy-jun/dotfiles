@@ -18,9 +18,10 @@ _load_pure_prompt() {
     )
     
     local pure_dir=""
-    for path in "${pure_paths[@]}"; do
-        if [[ -d "$path" ]]; then
-            pure_dir="$path"
+    # CRITICAL: Don't use 'path' as variable name - it conflicts with zsh's PATH array!
+    for pure_path in "${pure_paths[@]}"; do
+        if [[ -d "$pure_path" ]]; then
+            pure_dir="$pure_path"
             break
         fi
     done
