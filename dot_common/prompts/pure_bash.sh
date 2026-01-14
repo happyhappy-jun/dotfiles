@@ -82,4 +82,9 @@ _pure_bash_prompt() {
 }
 
 # Set up the prompt
-PROMPT_COMMAND="_pure_bash_prompt"
+# If PROMPT_COMMAND is already set (e.g., by env_manager), append to it
+if [ -n "$PROMPT_COMMAND" ]; then
+    PROMPT_COMMAND="$PROMPT_COMMAND; _pure_bash_prompt"
+else
+    PROMPT_COMMAND="_pure_bash_prompt"
+fi

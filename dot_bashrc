@@ -144,6 +144,28 @@ _load_common_config() {
 _load_common_config
 
 # ============================================================================
+# Environment Variable Management
+# ============================================================================
+
+# Hook into directory changes to reload .env files
+# This runs before each prompt (when directory might have changed)
+if [ -n "$COMMON_DIR" ] && [ -f "$COMMON_DIR/env_manager.sh" ]; then
+    # Save existing PROMPT_COMMAND if any
+    _env_manager_original_prompt_command="$PROMPT_COMMAND"
+    
+    # Create wrapper that checks env and calls original PROMPT_COMMAND
+    _env_manager_prompt_wrapper() {
+        _check_and_reload_env
+        # Call original PROMPT_COMMAND if it exists
+        if [ -n "$_env_manager_original_prompt_command" ]; then
+            eval "$_env_manager_original_prompt_command"
+        fi
+    }
+    
+    PROMPT_COMMAND="_env_manager_prompt_wrapper"
+fi
+
+# ============================================================================
 # Completion
 # ============================================================================
 
