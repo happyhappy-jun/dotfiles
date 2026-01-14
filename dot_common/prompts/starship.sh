@@ -86,15 +86,32 @@ _init_starship() {
         promptinit
         prompt off 2>/dev/null || true
         
-        # Ensure Starship config exists (create with Pure preset if missing)
+        # Ensure Starship config exists with Pure preset
+        # Create config directory if it doesn't exist
+        mkdir -p "$HOME/.config" 2>/dev/null || true
+        
+        # Check if config exists and has Pure preset
+        # If not, create/update it with Pure preset
         if [ ! -f "$HOME/.config/starship.toml" ]; then
-            # Try to create config with Pure preset
+            # Config doesn't exist, create with Pure preset
             if starship preset pure-preset -o "$HOME/.config/starship.toml" 2>/dev/null; then
                 : # Config created successfully
             else
                 # If preset fails, create empty config (Starship will use defaults)
-                mkdir -p "$HOME/.config" 2>/dev/null || true
                 touch "$HOME/.config/starship.toml" 2>/dev/null || true
+            fi
+        else
+            # Config exists - check if it's using Pure preset
+            # If config doesn't contain "pure" indicators, update it
+            if ! grep -qE '(format|character|git_branch|git_status|directory).*pure' "$HOME/.config/starship.toml" 2>/dev/null && \
+               ! grep -qE '\[character\]' "$HOME/.config/starship.toml" 2>/dev/null; then
+                # Config exists but doesn't look like Pure preset, update it
+                # Backup existing config first
+                if [ -f "$HOME/.config/starship.toml" ]; then
+                    cp "$HOME/.config/starship.toml" "$HOME/.config/starship.toml.bak" 2>/dev/null || true
+                fi
+                # Apply Pure preset
+                starship preset pure-preset -o "$HOME/.config/starship.toml" 2>/dev/null || true
             fi
         fi
         
@@ -111,15 +128,32 @@ _init_starship() {
             PROMPT_COMMAND="${PROMPT_COMMAND#;}"
         fi
         
-        # Ensure Starship config exists (create with Pure preset if missing)
+        # Ensure Starship config exists with Pure preset
+        # Create config directory if it doesn't exist
+        mkdir -p "$HOME/.config" 2>/dev/null || true
+        
+        # Check if config exists and has Pure preset
+        # If not, create/update it with Pure preset
         if [ ! -f "$HOME/.config/starship.toml" ]; then
-            # Try to create config with Pure preset
+            # Config doesn't exist, create with Pure preset
             if starship preset pure-preset -o "$HOME/.config/starship.toml" 2>/dev/null; then
                 : # Config created successfully
             else
                 # If preset fails, create empty config (Starship will use defaults)
-                mkdir -p "$HOME/.config" 2>/dev/null || true
                 touch "$HOME/.config/starship.toml" 2>/dev/null || true
+            fi
+        else
+            # Config exists - check if it's using Pure preset
+            # If config doesn't contain "pure" indicators, update it
+            if ! grep -qE '(format|character|git_branch|git_status|directory).*pure' "$HOME/.config/starship.toml" 2>/dev/null && \
+               ! grep -qE '\[character\]' "$HOME/.config/starship.toml" 2>/dev/null; then
+                # Config exists but doesn't look like Pure preset, update it
+                # Backup existing config first
+                if [ -f "$HOME/.config/starship.toml" ]; then
+                    cp "$HOME/.config/starship.toml" "$HOME/.config/starship.toml.bak" 2>/dev/null || true
+                fi
+                # Apply Pure preset
+                starship preset pure-preset -o "$HOME/.config/starship.toml" 2>/dev/null || true
             fi
         fi
         
