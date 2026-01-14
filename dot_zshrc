@@ -95,6 +95,19 @@ zstyle ':completion:*' menu select
 zstyle ':completion:*' matcher-list 'm:{a-zA-Z}={A-Za-z}' 'r:|=*' 'l:|=* r:|=*'
 
 # ============================================================================
+# Load Autocomplete Scripts
+# ============================================================================
+
+# Load completion scripts for various tools (git, docker, kubectl, etc.)
+if [ -n "$COMMON_DIR" ] && [ -f "$COMMON_DIR/completions.sh" ]; then
+    source "$COMMON_DIR/completions.sh"
+elif [ -f "$HOME/.common/completions.sh" ]; then
+    source "$HOME/.common/completions.sh"
+elif [ -f "$HOME/dot_common/completions.sh" ]; then
+    source "$HOME/dot_common/completions.sh"
+fi
+
+# ============================================================================
 # Lazy Loading Setup for Heavy Tools
 # ============================================================================
 
@@ -219,5 +232,6 @@ if [ -f "$HOME/.zshrc.local" ]; then
     source "$HOME/.zshrc.local"
 fi
 
-# Run compinit one more time to ensure everything is loaded
-compinit -d "$HOME/.zsh/cache/.zcompdump-$HOST"
+# Run compinit one more time to ensure everything is loaded (including completions)
+# This ensures all completion scripts loaded above are registered
+compinit -d "$HOME/.zsh/cache/.zcompdump-$HOST" 2>/dev/null || true

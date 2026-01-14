@@ -10,6 +10,7 @@ Cross-platform dotfiles configuration that works seamlessly across macOS (zsh) a
 - **Chezmoi Integration**: Easy synchronization across machines using chezmoi
 - **OS-Aware**: Automatically detects and adapts to the operating system
 - **Pure Prompt**: Beautiful minimal prompt for zsh (auto-installs) and Pure-inspired prompt for bash
+- **Autocomplete**: Automatically detects and loads completion scripts for common tools (git, docker, kubectl, terraform, aws, npm, etc.)
 
 ## Installation
 
@@ -60,7 +61,11 @@ dotfiles/
 │   ├── aliases.sh              # Common aliases
 │   ├── functions.sh            # Common functions
 │   ├── paths.sh                # PATH management
-│   └── lazy_load.sh            # Lazy loading utilities
+│   ├── lazy_load.sh            # Lazy loading utilities
+│   ├── completions.sh          # Autocomplete scripts loader
+│   └── prompts/                # Prompt configurations
+│       ├── pure_zsh.sh         # Pure prompt for zsh
+│       └── pure_bash.sh        # Pure-inspired prompt for bash
 ├── run_once_before/            # One-time setup scripts
 │   └── install_dependencies.sh
 └── README.md                   # This file
