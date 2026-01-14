@@ -422,6 +422,41 @@ This dotfiles setup includes the [Pure prompt](https://github.com/sindresorhus/p
 **Fallback:**
 - If Pure fails to load, falls back to Starship (if installed) or simple prompt
 
+## History Substring Search
+
+Both zsh and bash include enhanced history search functionality that allows you to search through command history by typing part of a command.
+
+**How it works:**
+1. Type part of a command you want to find
+2. Press **Up arrow** to search backward through history for matching commands
+3. Press **Down arrow** to search forward through history for matching commands
+4. The search matches any command containing the text you typed (substring match)
+
+**Example:**
+```bash
+# Type "git" and press Up arrow
+git
+# Navigates through all commands containing "git" in your history
+# e.g., git commit, git push, git pull, etc.
+```
+
+**Features:**
+- **Substring matching**: Finds commands containing your search text anywhere in the command
+- **Bidirectional search**: Navigate both forward and backward through matching history
+- **Smart reset**: Automatically resets search when you change the search text
+- **Empty line fallback**: If the line is empty, uses normal history navigation
+
+**Key Bindings:**
+- **Up Arrow** (`↑`): Search backward through matching history
+- **Down Arrow** (`↓`): Search forward through matching history
+- **Page Up/Down**: Alternative navigation keys (zsh only)
+
+**Technical Details:**
+- Implemented in `~/.common/history_search.sh`
+- Automatically loaded by both `~/.zshrc` and `~/.bashrc`
+- Works seamlessly with existing history configuration
+- Compatible with both emacs and vi key bindings
+
 ## Synchronization
 
 ### Updating Dotfiles

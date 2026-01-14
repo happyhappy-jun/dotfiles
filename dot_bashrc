@@ -209,6 +209,19 @@ else
 fi
 
 # ============================================================================
+# History Substring Search
+# ============================================================================
+
+# Load history substring search functionality
+if [ -n "$COMMON_DIR" ] && [ -f "$COMMON_DIR/history_search.sh" ]; then
+    source "$COMMON_DIR/history_search.sh"
+elif [ -f "$HOME/.common/history_search.sh" ]; then
+    source "$HOME/.common/history_search.sh"
+elif [ -f "$HOME/dot_common/history_search.sh" ]; then
+    source "$HOME/dot_common/history_search.sh"
+fi
+
+# ============================================================================
 # Final Setup
 # ============================================================================
 
