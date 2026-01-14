@@ -148,6 +148,27 @@ alias sha256sum='command -v shasum >/dev/null 2>&1 && shasum -a 256 || sha256sum
 
 # Navigate to configuration directories
 alias chezmoiconf='cd ~/.config/chezmoi 2>/dev/null || cd "$(chezmoi source-path)" 2>/dev/null || echo "Chezmoi config not found"'
+
+# Chezmoi operations
+alias cmu='chezmoi update'
+alias cmupdate='chezmoi update'
+alias cma='chezmoi apply'
+alias cmapply='chezmoi apply'
+alias cmua='chezmoi update && chezmoi apply'
+alias cmupdate-apply='chezmoi update && chezmoi apply'
+
+# Shell configuration reload
+if [ -n "$ZSH_VERSION" ]; then
+    alias reload='source ~/.zshrc'
+    alias src='source ~/.zshrc'
+elif [ -n "$BASH_VERSION" ]; then
+    alias reload='source ~/.bashrc'
+    alias src='source ~/.bashrc'
+fi
+
+# Combined chezmoi update, apply, and reload
+alias cmuar='chezmoi update && chezmoi apply && reload'
+alias cmupdate-apply-reload='chezmoi update && chezmoi apply && reload'
 alias powershellconf='cd ~/.config/powershell 2>/dev/null || cd "$HOME/Documents/PowerShell" 2>/dev/null || echo "PowerShell config not found"'
 alias sublimeconf='cd ~/.config/sublime-text 2>/dev/null || cd "$HOME/Library/Application Support/Sublime Text" 2>/dev/null || echo "Sublime Text config not found"'
 
