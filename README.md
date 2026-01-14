@@ -73,9 +73,12 @@ dotfiles/
 │   └── prompts/                # Prompt configurations
 │       ├── pure_zsh.sh         # Pure prompt for zsh
 │       └── pure_bash.sh        # Pure-inspired prompt for bash
-├── run_once_before/            # One-time setup scripts
+├── run_once_before_*.sh        # One-time setup scripts (automatically executed by chezmoi)
 │   ├── install_dependencies.sh
-│   └── install_tmux_config.sh # Installs Oh my tmux! repository
+│   ├── install_starship.sh
+│   ├── setup_starship_config.sh
+│   ├── install_history_search.sh
+│   └── install_tmux_config.sh  # Installs Oh my tmux! repository
 └── README.md                   # This file
 ```
 
@@ -338,7 +341,7 @@ See `dot_common/functions.sh` for the complete list.
 This dotfiles setup includes [Oh my tmux!](https://github.com/gpakosz/.tmux) - a self-contained, pretty and versatile tmux configuration.
 
 **Features:**
-- Automatic installation via `run_once_before/install_tmux_config.sh`
+- Automatic installation via `run_once_before_install_tmux_config.sh` (executed automatically by chezmoi)
 - Symlink management via `dot_common/tmux_setup.sh`
 - Customization file (`dot_tmux.conf.local`) managed by chezmoi
 - Same configuration across all machines
@@ -468,7 +471,7 @@ Both zsh and bash include enhanced history search functionality that allows you 
 
 **For Zsh:**
 - Uses the official [zsh-history-substring-search](https://github.com/zsh-users/zsh-history-substring-search) plugin
-- Automatically installed on first use via `run_once_before/install_history_search.sh`
+- Automatically installed on first use via `run_once_before_install_history_search.sh` (executed automatically by chezmoi)
 - Located at `~/.zsh/plugins/zsh-history-substring-search/`
 
 **For Bash:**
@@ -508,7 +511,7 @@ The zsh plugin is automatically installed when you run:
 ```bash
 chezmoi apply
 # Or manually:
-bash ~/.local/share/chezmoi/run_once_before/install_history_search.sh
+bash ~/.local/share/chezmoi/run_once_before_install_history_search.sh
 ```
 
 **Configuration (Zsh):**
