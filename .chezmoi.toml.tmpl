@@ -3,19 +3,40 @@
 
 [data]
     # OS detection: "darwin" for macOS, "linux" for Ubuntu
-    os = "{{ .os | default "unknown" }}"
+    # Note: .os is a built-in chezmoi variable, set here for reference
+    {{- if hasKey . "os" }}
+    os = "{{ .os }}"
+    {{- else }}
+    os = "unknown"
+    {{- end }}
     
     # Shell detection: "zsh" or "bash"
-    shell = {{ if eq (.os | default "linux") "darwin" }}"zsh"{{ else }}"bash"{{ end }}
+    {{- if hasKey . "os" }}
+    shell = {{ if eq .os "darwin" }}"zsh"{{ else }}"bash"{{ end }}
+    {{- else }}
+    shell = "bash"
+    {{- end }}
     
     # Architecture
-    arch = "{{ .arch | default "unknown" }}"
+    {{- if hasKey . "arch" }}
+    arch = "{{ .arch }}"
+    {{- else }}
+    arch = "unknown"
+    {{- end }}
     
     # Home directory
-    homeDir = "{{ .chezmoi.homeDir | default "" }}"
+    {{- if and (hasKey . "chezmoi") (hasKey .chezmoi "homeDir") }}
+    homeDir = "{{ .chezmoi.homeDir }}"
+    {{- else }}
+    homeDir = ""
+    {{- end }}
     
     # Source directory
-    sourceDir = "{{ .chezmoi.sourceDir | default "" }}"
+    {{- if and (hasKey . "chezmoi") (hasKey .chezmoi "sourceDir") }}
+    sourceDir = "{{ .chezmoi.sourceDir }}"
+    {{- else }}
+    sourceDir = ""
+    {{- end }}
     
     # Machine-specific variables (can be overridden in ~/.config/chezmoi/chezmoi.toml)
     email = "{{ .email | default "" }}"
