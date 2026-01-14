@@ -9,9 +9,10 @@
 # Only run if this is an interactive shell
 [[ $- != *i* ]] && return
 
-# CRITICAL: Initialize PATH early if empty (before sourcing any scripts)
+# CRITICAL: Initialize PATH early if empty or broken (before sourcing any scripts)
 # This prevents "command not found" errors
-if [ -z "$PATH" ] || [ "$PATH" = "" ]; then
+# Check if PATH is empty, unset, or doesn't contain critical system paths
+if [ -z "$PATH" ] || [ "$PATH" = "" ] || [[ "$PATH" != *"/usr/bin"* ]] || [[ "$PATH" != *"/bin"* ]]; then
     if [[ "$OSTYPE" == "darwin"* ]]; then
         export PATH="/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/opt/homebrew/bin"
     else
