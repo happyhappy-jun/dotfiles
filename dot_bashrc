@@ -132,7 +132,7 @@ fi
 
 # Load Pure-inspired prompt for bash
 # Falls back to simple prompt if Pure prompt script is not available
-if [ -f "$COMMON_DIR/prompts/pure_bash.sh" ]; then
+if [ -n "$COMMON_DIR" ] && [ -f "$COMMON_DIR/prompts/pure_bash.sh" ]; then
     source "$COMMON_DIR/prompts/pure_bash.sh"
 elif [ -f "$HOME/.common/prompts/pure_bash.sh" ]; then
     source "$HOME/.common/prompts/pure_bash.sh"

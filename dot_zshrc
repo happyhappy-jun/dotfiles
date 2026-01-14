@@ -167,7 +167,7 @@ _load_common_config
 
 # Load Pure prompt (https://github.com/sindresorhus/pure)
 # Falls back to simple prompt if Pure is not available
-if [ -f "$COMMON_DIR/prompts/pure_zsh.sh" ]; then
+if [ -n "$COMMON_DIR" ] && [ -f "$COMMON_DIR/prompts/pure_zsh.sh" ]; then
     source "$COMMON_DIR/prompts/pure_zsh.sh"
 elif [ -f "$HOME/.common/prompts/pure_zsh.sh" ]; then
     source "$HOME/.common/prompts/pure_zsh.sh"
