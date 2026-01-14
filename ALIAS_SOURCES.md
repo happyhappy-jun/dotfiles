@@ -63,7 +63,13 @@ These appear to be custom aliases specific to your environment:
 - `alias sr2='srun --gpus 2 --pty bash'` - SLURM run with 2 GPUs
 - `alias sr4='srun --gpus 4 --pty bash'` - SLURM run with 4 GPUs
 
-**Location**: Likely in `~/.bashrc.local` or system-wide configuration
+**Location**: **NOT in your dotfiles project** - These are loaded from:
+- System-wide configuration (likely `/etc/profile.d/` or similar)
+- Environment modules system
+- Login node initialization scripts
+- **NOT** from `~/.bashrc.local` or your chezmoi-managed dotfiles
+
+**Note**: The `sr1`, `sr2`, `sr4` aliases are **NOT** part of your dotfiles project. They are loaded from an external source (likely system-wide configuration on your login node).
 
 ## How to Find Where oh-my-bash is Loaded
 
