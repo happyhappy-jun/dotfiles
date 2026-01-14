@@ -61,7 +61,11 @@ path() {
 }
 
 # System information (uses available tool)
+# Unalias first to avoid conflicts if alias was set before function
 sysinfo() {
+    # Remove alias if it exists (to avoid conflicts)
+    unalias sysinfo 2>/dev/null || true
+    
     if command -v neofetch >/dev/null 2>&1; then
         neofetch
     elif command -v screenfetch >/dev/null 2>&1; then
@@ -315,7 +319,11 @@ backup() {
 }
 
 # Reload shell configuration
+# Unalias first to avoid conflicts if alias was set before function
 reload() {
+    # Remove alias if it exists (to avoid conflicts)
+    unalias reload 2>/dev/null || true
+    
     if [ -n "$ZSH_VERSION" ]; then
         source ~/.zshrc
         echo "Zsh configuration reloaded"

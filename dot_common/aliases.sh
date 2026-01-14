@@ -155,15 +155,16 @@ alias cma='chezmoi apply'
 alias cmua='chezmoi update && chezmoi apply'
 
 # Shell configuration reload
+# Note: 'reload' is a function defined in functions.sh, so we don't create an alias
+# Use 'src' as a shortcut alias instead
 if [ -n "$ZSH_VERSION" ]; then
-    alias reload='source ~/.zshrc'
     alias src='source ~/.zshrc'
 elif [ -n "$BASH_VERSION" ]; then
-    alias reload='source ~/.bashrc'
     alias src='source ~/.bashrc'
 fi
 
 # Combined chezmoi update, apply, and reload
+# Note: 'reload' is a function, so we can use it directly in the alias
 alias chz='chezmoi update && chezmoi apply && reload'
 
 # ============================================================================
