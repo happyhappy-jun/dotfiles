@@ -45,23 +45,28 @@ lazy_load() {
 }
 
 # Lazy load with multiple commands
-# Usage: lazy_load_multi <command> [--] <load_command> [command1] [command2] ...
-# Example: lazy_load_multi nvm -- 'source "$HOME/.nvm/nvm.sh"' node npm
+# Usage: lazy_load_multi <command1> [command2] ... -- <load_command>
+# Example: lazy_load_multi node npm npx -- 'source "$HOME/.nvm/nvm.sh"'
 lazy_load_multi() {
-    local cmd="$1"
-    shift
+    local commands=()
     
-    # Handle '--' separator if present
+    # Collect all commands until we hit '--'
+    while [ $# -gt 0 ] && [ "$1" != "--" ]; do
+        commands+=("$1")
+        shift
+    done
+    
+    # Skip '--' if present
     if [ "$1" = "--" ]; then
         shift
     fi
     
-    local load_cmd="$1"
-    shift
-    local commands=("$cmd" "$@")
+    # Remaining arguments are the load command
+    local load_cmd="$*"
     
-    for c in "${commands[@]}"; do
-        lazy_load "$c" -- "$load_cmd"
+    # Lazy load each command
+    for cmd in "${commands[@]}"; do
+        lazy_load "$cmd" -- "$load_cmd"
     done
 }
 
