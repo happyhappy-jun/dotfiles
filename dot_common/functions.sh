@@ -113,6 +113,15 @@ gac() {
         echo "Usage: gac <message>"
         return 1
     fi
+    # Ensure git is configured before committing
+    if command -v git >/dev/null 2>&1; then
+        if [ -n "${GIT_USER_NAME:-}" ] || [ -n "${USER_NAME:-}" ]; then
+            git config --global user.name "${GIT_USER_NAME:-${USER_NAME:-}}" 2>/dev/null || true
+        fi
+        if [ -n "${GIT_USER_EMAIL:-}" ] || [ -n "${USER_EMAIL:-}" ]; then
+            git config --global user.email "${GIT_USER_EMAIL:-${USER_EMAIL:-}}" 2>/dev/null || true
+        fi
+    fi
     git add --all && git commit -m "$1"
 }
 
@@ -120,6 +129,15 @@ gacp() {
     if [ -z "$1" ]; then
         echo "Usage: gacp <message>"
         return 1
+    fi
+    # Ensure git is configured before committing
+    if command -v git >/dev/null 2>&1; then
+        if [ -n "${GIT_USER_NAME:-}" ] || [ -n "${USER_NAME:-}" ]; then
+            git config --global user.name "${GIT_USER_NAME:-${USER_NAME:-}}" 2>/dev/null || true
+        fi
+        if [ -n "${GIT_USER_EMAIL:-}" ] || [ -n "${USER_EMAIL:-}" ]; then
+            git config --global user.email "${GIT_USER_EMAIL:-${USER_EMAIL:-}}" 2>/dev/null || true
+        fi
     fi
     git add --all && git commit -m "$1" && git push
 }
