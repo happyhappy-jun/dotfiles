@@ -2,33 +2,39 @@
 # PATH management with OS-aware additions
 # This file handles PATH modifications for both macOS and Linux
 
+# CRITICAL: Always preserve existing PATH - never clear it
+# Store original PATH before any modifications
+_ORIGINAL_PATH="${PATH:-}"
+
 # Ensure PATH is initialized (safety check)
-# Preserve existing PATH or initialize with system defaults
-if [ -z "$PATH" ]; then
+# If PATH is empty or unset, initialize with system defaults
+if [ -z "$PATH" ] || [ "$PATH" = "" ]; then
     # Initialize with system defaults based on OS
     if [[ "$OSTYPE" == "darwin"* ]]; then
-        export PATH="/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/opt/homebrew/bin"
+        PATH="/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/opt/homebrew/bin"
     else
-        export PATH="/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin"
+        PATH="/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin"
     fi
+    export PATH
 else
-    # PATH exists, ensure critical system paths are present (add if missing)
-    # Don't use 'local' in sourced scripts - use regular variables
+    # PATH exists - ensure critical system paths are present (prepend if missing)
+    # Build a list of system paths that must be in PATH
     if [[ "$OSTYPE" == "darwin"* ]]; then
         # macOS: ensure system paths are in PATH
         for sys_path in /usr/local/bin /usr/bin /bin /usr/sbin /sbin /opt/homebrew/bin; do
             if [[ ":$PATH:" != *":$sys_path:"* ]] && [ -d "$sys_path" ]; then
-                export PATH="$sys_path:$PATH"
+                PATH="$sys_path:$PATH"
             fi
         done
     else
         # Linux: ensure system paths are in PATH
         for sys_path in /usr/local/bin /usr/bin /bin /usr/sbin /sbin; do
             if [[ ":$PATH:" != *":$sys_path:"* ]] && [ -d "$sys_path" ]; then
-                export PATH="$sys_path:$PATH"
+                PATH="$sys_path:$PATH"
             fi
         done
     fi
+    export PATH
 fi
 
 # Function to add path if it exists and is not already in PATH
