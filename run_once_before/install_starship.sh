@@ -45,14 +45,9 @@ if command -v starship >/dev/null 2>&1; then
     exit 0
 fi
 
-# Try to install using package managers first
-if [ "$IS_MACOS" = true ]; then
-    # macOS: Try Homebrew first
-    if command -v brew >/dev/null 2>&1; then
-        echo "Installing Starship via Homebrew..."
-        brew install starship && exit 0
-    fi
-elif [ "$IS_LINUX" = true ]; then
+# Try to install using package managers first (Linux only)
+# macOS will use the official installer script
+if [ "$IS_LINUX" = true ]; then
     # Linux: Try system package managers
     if command -v apt >/dev/null 2>&1; then
         # Debian/Ubuntu
