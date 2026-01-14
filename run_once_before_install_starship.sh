@@ -106,14 +106,21 @@ if [ "$IS_LINUX" = true ]; then
 fi
 
 # Fallback: Install using official installer script
-echo "Installing Starship using official installer..."
+# Install to ~/.local/bin to avoid requiring sudo
+echo "Installing Starship using official installer to ~/.local/bin..."
 INSTALL_SUCCESS=false
+
+# Ensure ~/.local/bin exists
+mkdir -p ~/.local/bin
+
 if command -v curl >/dev/null 2>&1; then
-    if curl -sS https://starship.rs/install.sh | sh; then
+    # Use -b flag to specify binary directory (avoids sudo prompt)
+    if curl -sS https://starship.rs/install.sh | sh -s -- -b ~/.local/bin; then
         INSTALL_SUCCESS=true
     fi
 elif command -v wget >/dev/null 2>&1; then
-    if wget -qO- https://starship.rs/install.sh | sh; then
+    # Use -b flag to specify binary directory (avoids sudo prompt)
+    if wget -qO- https://starship.rs/install.sh | sh -s -- -b ~/.local/bin; then
         INSTALL_SUCCESS=true
     fi
 else
