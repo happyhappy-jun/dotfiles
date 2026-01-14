@@ -7,18 +7,27 @@
 _ORIGINAL_PATH="${PATH:-}"
 
 # Ensure PATH is initialized (safety check)
-# If PATH is empty or unset, initialize with system defaults
-if [ -z "$PATH" ] || [ "$PATH" = "" ]; then
-    # Initialize with system defaults based on OS
+# If PATH is empty, unset, or doesn't contain critical system paths, fix it
+if [ -z "$PATH" ] || [ "$PATH" = "" ] || [[ "$PATH" != *"/usr/bin"* ]] || [[ "$PATH" != *"/bin"* ]]; then
+    # PATH is broken or missing critical paths - reinitialize
     if [[ "$OSTYPE" == "darwin"* ]]; then
+        # Start with system defaults for macOS
         PATH="/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/opt/homebrew/bin"
+        # Preserve original PATH if it was set (append it)
+        if [ -n "$_ORIGINAL_PATH" ] && [[ "$_ORIGINAL_PATH" != *"/usr/share/zsh/pure"* ]]; then
+            PATH="$PATH:$_ORIGINAL_PATH"
+        fi
     else
+        # Start with system defaults for Linux
         PATH="/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin"
+        # Preserve original PATH if it was set (append it)
+        if [ -n "$_ORIGINAL_PATH" ] && [[ "$_ORIGINAL_PATH" != *"/usr/share/zsh/pure"* ]]; then
+            PATH="$PATH:$_ORIGINAL_PATH"
+        fi
     fi
     export PATH
 else
-    # PATH exists - ensure critical system paths are present (prepend if missing)
-    # Build a list of system paths that must be in PATH
+    # PATH exists and looks valid - ensure critical system paths are present (prepend if missing)
     if [[ "$OSTYPE" == "darwin"* ]]; then
         # macOS: ensure system paths are in PATH
         for sys_path in /usr/local/bin /usr/bin /bin /usr/sbin /sbin /opt/homebrew/bin; do
