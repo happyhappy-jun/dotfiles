@@ -139,9 +139,8 @@ alias md5sum='command -v md5 >/dev/null 2>&1 && md5 || md5sum'
 alias sha1sum='command -v shasum >/dev/null 2>&1 && shasum -a 1 || sha1sum'
 alias sha256sum='command -v shasum >/dev/null 2>&1 && shasum -a 256 || sha256sum'
 
-# Weather (using wttr.in)
-alias weather='curl -s "wttr.in/?format=%l:+%28%C%29+%c++%t+%5B%h,+%w%5D"'
-alias forecast='curl -s "wttr.in/?n"'
+# Weather (functions defined in functions.sh, no aliases to avoid conflict)
+# Use 'weather' and 'forecast' functions instead of aliases
 
 # ============================================================================
 # Configuration Paths
