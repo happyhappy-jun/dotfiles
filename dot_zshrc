@@ -255,8 +255,14 @@ fi
 # ============================================================================
 
 # Source machine-specific zshrc if it exists (not managed by chezmoi)
+# Note: Make sure .zshrc.local doesn't load Pure prompt if using Starship
 if [ -f "$HOME/.zshrc.local" ]; then
-    source "$HOME/.zshrc.local"
+    # Temporarily disable Pure prompt loading if it exists in local config
+    _zshrc_local_content=$(cat "$HOME/.zshrc.local" 2>/dev/null)
+    if [[ "$_zshrc_local_content" != *"pure"* ]] && [[ "$_zshrc_local_content" != *"Pure"* ]]; then
+        source "$HOME/.zshrc.local"
+    fi
+    unset _zshrc_local_content
 fi
 
 # Run compinit one more time to ensure everything is loaded (including completions)

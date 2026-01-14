@@ -13,10 +13,32 @@ _init_starship() {
     # Initialize Starship based on shell
     if [ -n "$ZSH_VERSION" ]; then
         # Zsh initialization
+        # First, ensure Pure prompt is not loaded
+        # Unset Pure prompt variables if they exist
+        unset PURE_PROMPT_SYMBOL 2>/dev/null || true
+        unset PURE_GIT_DOWN_ARROW 2>/dev/null || true
+        unset PURE_GIT_UP_ARROW 2>/dev/null || true
+        
+        # Reset prompt to default before initializing Starship
+        # This prevents conflicts with Pure prompt
+        autoload -Uz promptinit
+        promptinit
+        prompt off 2>/dev/null || true
+        
+        # Initialize Starship
         eval "$(starship init zsh)"
         return 0
     elif [ -n "$BASH_VERSION" ]; then
         # Bash initialization
+        # Reset PROMPT_COMMAND to remove any Pure prompt hooks
+        # (Keep env_manager hook if it exists)
+        if [[ "$PROMPT_COMMAND" == *"_pure_bash_prompt"* ]]; then
+            PROMPT_COMMAND="${PROMPT_COMMAND//_pure_bash_prompt/}"
+            PROMPT_COMMAND="${PROMPT_COMMAND//;;/;}"
+            PROMPT_COMMAND="${PROMPT_COMMAND#;}"
+        fi
+        
+        # Initialize Starship
         eval "$(starship init bash)"
         return 0
     fi
