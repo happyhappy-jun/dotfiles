@@ -9,6 +9,16 @@
 # Only run if this is an interactive shell
 [[ $- != *i* ]] && return
 
+# CRITICAL: Initialize PATH early if empty (before sourcing any scripts)
+# This prevents "command not found" errors
+if [ -z "$PATH" ] || [ "$PATH" = "" ]; then
+    if [[ "$OSTYPE" == "darwin"* ]]; then
+        export PATH="/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/opt/homebrew/bin"
+    else
+        export PATH="/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin"
+    fi
+fi
+
 # Source common paths first (lightweight)
 # Try multiple locations to support different chezmoi setups
 COMMON_DIR=""
