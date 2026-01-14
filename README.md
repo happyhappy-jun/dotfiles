@@ -61,6 +61,7 @@ dotfiles/
 ├── dot_bashrc                  # Bash configuration (becomes ~/.bashrc)
 ├── dot_zshrc                   # Zsh configuration (becomes ~/.zshrc)
 ├── dot_env.tmpl                # Environment variables template (becomes ~/.env)
+├── dot_tmux.conf.local         # Tmux customization file (becomes ~/.tmux.conf.local)
 ├── dot_common/                  # Shell-agnostic scripts (becomes ~/.common/)
 │   ├── aliases.sh              # Common aliases
 │   ├── functions.sh            # Common functions
@@ -68,6 +69,7 @@ dotfiles/
 │   ├── lazy_load.sh            # Lazy loading utilities
 │   ├── completions.sh          # Autocomplete scripts loader
 │   ├── env_manager.sh          # Environment variable manager
+│   ├── tmux_setup.sh           # Tmux symlink management
 │   └── prompts/                # Prompt configurations
 │       ├── pure_zsh.sh         # Pure prompt for zsh
 │       └── pure_bash.sh        # Pure-inspired prompt for bash
