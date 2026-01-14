@@ -65,6 +65,9 @@ _reload_env() {
         _load_env_file ".env"
     fi
     
+    # Configure git from environment variables after reloading
+    _configure_git_from_env
+    
     # Update tracked directory
     _ENV_MANAGER_CURRENT_DIR="$PWD"
 }
@@ -128,10 +131,30 @@ env_reload() {
     echo "Environment variables reloaded"
 }
 
+# Function to configure git from environment variables
+_configure_git_from_env() {
+    # Set git user name if GIT_USER_NAME is set
+    if [ -n "${GIT_USER_NAME:-}" ]; then
+        git config --global user.name "$GIT_USER_NAME" 2>/dev/null || true
+    elif [ -n "${USER_NAME:-}" ]; then
+        git config --global user.name "$USER_NAME" 2>/dev/null || true
+    fi
+    
+    # Set git user email if GIT_USER_EMAIL is set
+    if [ -n "${GIT_USER_EMAIL:-}" ]; then
+        git config --global user.email "$GIT_USER_EMAIL" 2>/dev/null || true
+    elif [ -n "${USER_EMAIL:-}" ]; then
+        git config --global user.email "$USER_EMAIL" 2>/dev/null || true
+    fi
+}
+
 # Initial load
 _reload_env
 
+# Configure git from environment variables after loading
+_configure_git_from_env
+
 # Export functions for use in shell (bash)
 if [ -n "$BASH_VERSION" ]; then
-    export -f _load_env_file _reload_env _check_and_reload_env env_show env_reload
+    export -f _load_env_file _reload_env _check_and_reload_env env_show env_reload _configure_git_from_env
 fi
