@@ -1,0 +1,30 @@
+# Chezmoi configuration template
+# This file is used by chezmoi to manage dotfiles across different machines
+
+[data]
+    # OS detection: "darwin" for macOS, "linux" for Ubuntu
+    os = "{{ .os }}"
+    
+    # Shell detection: "zsh" or "bash"
+    shell = "{{ if eq .os \"darwin\" }}zsh{{ else }}bash{{ end }}"
+    
+    # Architecture
+    arch = "{{ .arch }}"
+    
+    # Home directory
+    homeDir = "{{ .chezmoi.homeDir }}"
+    
+    # Source directory
+    sourceDir = "{{ .chezmoi.sourceDir }}"
+    
+    # Machine-specific variables (can be overridden in ~/.config/chezmoi/chezmoi.toml)
+    email = "{{ .email | default \"\" }}"
+    name = "{{ .name | default \"\" }}"
+    gitUser = "{{ .gitUser | default \"\" }}"
+
+[git]
+    # Auto commit changes
+    autoCommit = false
+    
+    # Auto push changes
+    autoPush = false

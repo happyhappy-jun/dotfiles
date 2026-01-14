@@ -1,0 +1,152 @@
+#!/usr/bin/env bash
+# Main bash configuration file
+# This file is managed by chezmoi and sources common functionality
+
+# ============================================================================
+# Early Setup - Performance Critical
+# ============================================================================
+
+# Only run if this is an interactive shell
+[[ $- != *i* ]] && return
+
+# Source common paths first (lightweight)
+# Try multiple locations to support different chezmoi setups
+COMMON_DIR=""
+for dir in "$HOME/.common" "$HOME/dot_common" "$(chezmoi source-path 2>/dev/null)/dot_common"; do
+    if [ -d "$dir" ]; then
+        COMMON_DIR="$dir"
+        break
+    fi
+done
+
+if [ -n "$COMMON_DIR" ]; then
+    [ -f "$COMMON_DIR/paths.sh" ] && source "$COMMON_DIR/paths.sh"
+    [ -f "$COMMON_DIR/lazy_load.sh" ] && source "$COMMON_DIR/lazy_load.sh"
+fi
+
+# ============================================================================
+# Bash-Specific Configuration
+# ============================================================================
+
+# History configuration
+export HISTSIZE=10000
+export HISTFILESIZE=20000
+export HISTCONTROL=ignoreboth:erasedups
+export HISTIGNORE="ls:ll:la:cd:exit:clear:history"
+
+# Append to history file instead of overwriting
+shopt -s histappend
+
+# Check window size after each command
+shopt -s checkwinsize
+
+# Enable ** globbing (bash 4+)
+shopt -s globstar 2>/dev/null
+
+# Enable case-insensitive globbing
+shopt -s nocaseglob 2>/dev/null
+
+# ============================================================================
+# Lazy Loading Setup for Heavy Tools
+# ============================================================================
+
+# Lazy load Node Version Manager (nvm)
+if [ -d "$HOME/.nvm" ]; then
+    lazy_load nvm -- 'export NVM_DIR="$HOME/.nvm" && [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"'
+    # Also lazy load node, npm, and npx
+    lazy_load_multi node npm npx -- 'export NVM_DIR="$HOME/.nvm" && [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"'
+fi
+
+# Lazy load Fast Node Manager (fnm)
+if [ -d "$HOME/.fnm" ]; then
+    lazy_load fnm -- 'eval "$(fnm env --use-on-cd)"'
+    lazy_load_multi node npm npx -- 'eval "$(fnm env --use-on-cd)"'
+fi
+
+# Lazy load Python Version Manager (pyenv)
+if [ -d "$HOME/.pyenv" ]; then
+    lazy_load pyenv -- 'export PYENV_ROOT="$HOME/.pyenv" && export PATH="$PYENV_ROOT/bin:$PATH" && eval "$(pyenv init -)"'
+    lazy_load_multi python python3 pip pip3 -- 'export PYENV_ROOT="$HOME/.pyenv" && export PATH="$PYENV_ROOT/bin:$PATH" && eval "$(pyenv init -)"'
+fi
+
+# Lazy load Ruby Version Manager (rbenv)
+if [ -d "$HOME/.rbenv" ]; then
+    lazy_load rbenv -- 'export PATH="$HOME/.rbenv/bin:$PATH" && eval "$(rbenv init -)"'
+    lazy_load_multi ruby gem bundle -- 'export PATH="$HOME/.rbenv/bin:$PATH" && eval "$(rbenv init -)"'
+fi
+
+# Lazy load Rust (cargo)
+if [ -f "$HOME/.cargo/env" ]; then
+    lazy_load cargo -- 'source "$HOME/.cargo/env"'
+    lazy_load rustc -- 'source "$HOME/.cargo/env"'
+fi
+
+# Lazy load Go
+if [ -d "$HOME/.go" ]; then
+    lazy_load go -- 'export PATH="$HOME/.go/bin:$PATH"'
+fi
+
+# ============================================================================
+# Source Common Functionality (Lazy Loaded)
+# ============================================================================
+
+# Function to lazy load common aliases and functions
+_load_common_config() {
+    # Find common directory (reuse if already found)
+    if [ -z "$COMMON_DIR" ]; then
+        for dir in "$HOME/.common" "$HOME/dot_common" "$(chezmoi source-path 2>/dev/null)/dot_common"; do
+            if [ -d "$dir" ]; then
+                COMMON_DIR="$dir"
+                break
+            fi
+        done
+    fi
+    
+    if [ -n "$COMMON_DIR" ]; then
+        [ -f "$COMMON_DIR/aliases.sh" ] && source "$COMMON_DIR/aliases.sh"
+        [ -f "$COMMON_DIR/functions.sh" ] && source "$COMMON_DIR/functions.sh"
+    fi
+}
+
+# Load common config immediately (can be made lazy if needed)
+_load_common_config
+
+# ============================================================================
+# Completion
+# ============================================================================
+
+# Enable programmable completion
+if [ -f /etc/bash_completion ] && ! shopt -oq posix; then
+    # Lazy load bash completion
+    lazy_load _bash_completion -- 'source /etc/bash_completion'
+fi
+
+# Git completion (if available)
+if [ -f "$HOME/.git-completion.bash" ]; then
+    source "$HOME/.git-completion.bash"
+fi
+
+# ============================================================================
+# Prompt Customization (Lightweight)
+# ============================================================================
+
+# Simple prompt - can be enhanced with starship or other tools
+# For better prompts, consider lazy loading starship
+if command -v starship >/dev/null 2>&1; then
+    # Lazy load starship prompt
+    lazy_load starship -- 'eval "$(starship init bash)"'
+    # Set a simple prompt until starship is loaded
+    export PS1='\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]\$ '
+else
+    # Colorful prompt
+    export PS1='\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]\$ '
+fi
+
+# ============================================================================
+# Final Setup
+# ============================================================================
+
+# Source machine-specific bashrc if it exists (not managed by chezmoi)
+if [ -f "$HOME/.bashrc.local" ]; then
+    source "$HOME/.bashrc.local"
+fi

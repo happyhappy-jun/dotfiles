@@ -1,0 +1,205 @@
+#!/usr/bin/env zsh
+# Main zsh configuration file
+# This file is managed by chezmoi and sources common functionality
+
+# ============================================================================
+# Early Setup - Performance Critical
+# ============================================================================
+
+# Only run if this is an interactive shell
+[[ -o interactive ]] || return
+
+# Source common paths first (lightweight)
+# Try multiple locations to support different chezmoi setups
+COMMON_DIR=""
+for dir in "$HOME/.common" "$HOME/dot_common" "$(chezmoi source-path 2>/dev/null)/dot_common"; do
+    if [ -d "$dir" ]; then
+        COMMON_DIR="$dir"
+        break
+    fi
+done
+
+if [ -n "$COMMON_DIR" ]; then
+    [ -f "$COMMON_DIR/paths.sh" ] && source "$COMMON_DIR/paths.sh"
+    [ -f "$COMMON_DIR/lazy_load.sh" ] && source "$COMMON_DIR/lazy_load.sh"
+fi
+
+# ============================================================================
+# Zsh-Specific Configuration
+# ============================================================================
+
+# History configuration
+export HISTSIZE=10000
+export SAVEHIST=20000
+export HISTFILE="$HOME/.zsh_history"
+
+# Share history between sessions
+setopt SHARE_HISTORY
+setopt HIST_IGNORE_DUPS
+setopt HIST_IGNORE_ALL_DUPS
+setopt HIST_REDUCE_BLANKS
+setopt HIST_IGNORE_SPACE
+setopt HIST_VERIFY
+setopt INC_APPEND_HISTORY
+
+# Directory navigation
+setopt AUTO_CD
+setopt AUTO_PUSHD
+setopt PUSHD_IGNORE_DUPS
+setopt PUSHD_SILENT
+
+# Globbing
+setopt EXTENDED_GLOB
+setopt GLOB_COMPLETE
+setopt NO_CASE_GLOB
+
+# Completion
+setopt COMPLETE_IN_WORD
+setopt ALWAYS_TO_END
+setopt AUTO_MENU
+setopt AUTO_LIST
+setopt AUTO_PARAM_SLASH
+setopt COMPLETE_ALIASES
+
+# ============================================================================
+# Zsh Completion System
+# ============================================================================
+
+# Initialize completion system (lightweight, runs early)
+autoload -Uz compinit
+
+# Only check for new completions once per day (performance optimization)
+if [ -n "${HOME}/.zcompdump(#qN.mh+24)" ]; then
+    compinit
+else
+    compinit -C
+fi
+
+# Enable completion caching
+zstyle ':completion:*' use-cache on
+zstyle ':completion:*' cache-path "$HOME/.zsh/cache"
+
+# Completion menu
+zstyle ':completion:*' menu select
+zstyle ':completion:*' matcher-list 'm:{a-zA-Z}={A-Za-z}' 'r:|=*' 'l:|=* r:|=*'
+
+# ============================================================================
+# Lazy Loading Setup for Heavy Tools
+# ============================================================================
+
+# Lazy load Node Version Manager (nvm)
+if [ -d "$HOME/.nvm" ]; then
+    lazy_load nvm -- 'export NVM_DIR="$HOME/.nvm" && [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"'
+    # Also lazy load node, npm, and npx
+    lazy_load_multi node npm npx -- 'export NVM_DIR="$HOME/.nvm" && [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"'
+fi
+
+# Lazy load Fast Node Manager (fnm)
+if [ -d "$HOME/.fnm" ]; then
+    lazy_load fnm -- 'eval "$(fnm env --use-on-cd)"'
+    lazy_load_multi node npm npx -- 'eval "$(fnm env --use-on-cd)"'
+fi
+
+# Lazy load Python Version Manager (pyenv)
+if [ -d "$HOME/.pyenv" ]; then
+    lazy_load pyenv -- 'export PYENV_ROOT="$HOME/.pyenv" && export PATH="$PYENV_ROOT/bin:$PATH" && eval "$(pyenv init - zsh)"'
+    lazy_load_multi python python3 pip pip3 -- 'export PYENV_ROOT="$HOME/.pyenv" && export PATH="$PYENV_ROOT/bin:$PATH" && eval "$(pyenv init - zsh)"'
+fi
+
+# Lazy load Ruby Version Manager (rbenv)
+if [ -d "$HOME/.rbenv" ]; then
+    lazy_load rbenv -- 'export PATH="$HOME/.rbenv/bin:$PATH" && eval "$(rbenv init - zsh)"'
+    lazy_load_multi ruby gem bundle -- 'export PATH="$HOME/.rbenv/bin:$PATH" && eval "$(rbenv init - zsh)"'
+fi
+
+# Lazy load Rust (cargo)
+if [ -f "$HOME/.cargo/env" ]; then
+    lazy_load cargo -- 'source "$HOME/.cargo/env"'
+    lazy_load rustc -- 'source "$HOME/.cargo/env"'
+fi
+
+# Lazy load Go
+if [ -d "$HOME/.go" ]; then
+    lazy_load go -- 'export PATH="$HOME/.go/bin:$PATH"'
+fi
+
+# ============================================================================
+# Zsh Plugins (Lazy Loading)
+# ============================================================================
+
+# Check for zsh-defer plugin (if using a plugin manager)
+# This would typically be set up by oh-my-zsh, zinit, or similar
+if [ -f "$HOME/.zsh-defer/zsh-defer.plugin.zsh" ]; then
+    source "$HOME/.zsh-defer/zsh-defer.plugin.zsh"
+fi
+
+# For oh-my-zsh users, lazy loading can be configured in .zshrc.local
+# Example: zstyle ':omz:plugins:nvm' lazy yes
+
+# ============================================================================
+# Source Common Functionality
+# ============================================================================
+
+# Function to lazy load common aliases and functions
+_load_common_config() {
+    # Find common directory (reuse if already found)
+    if [ -z "$COMMON_DIR" ]; then
+        for dir in "$HOME/.common" "$HOME/dot_common" "$(chezmoi source-path 2>/dev/null)/dot_common"; do
+            if [ -d "$dir" ]; then
+                COMMON_DIR="$dir"
+                break
+            fi
+        done
+    fi
+    
+    if [ -n "$COMMON_DIR" ]; then
+        [ -f "$COMMON_DIR/aliases.sh" ] && source "$COMMON_DIR/aliases.sh"
+        [ -f "$COMMON_DIR/functions.sh" ] && source "$COMMON_DIR/functions.sh"
+    fi
+}
+
+# Load common config immediately (can be made lazy if needed)
+_load_common_config
+
+# ============================================================================
+# Prompt Customization
+# ============================================================================
+
+# Simple prompt - can be enhanced with starship or other tools
+# For better prompts, consider lazy loading starship
+if command -v starship >/dev/null 2>&1; then
+    # Lazy load starship prompt
+    lazy_load starship -- 'eval "$(starship init zsh)"'
+    # Set a simple prompt until starship is loaded
+    PROMPT='%F{green}%n@%m%f:%F{blue}%~%f$ '
+else
+    # Colorful prompt
+    PROMPT='%F{green}%n@%m%f:%F{blue}%~%f$ '
+fi
+
+# ============================================================================
+# Key Bindings
+# ============================================================================
+
+# Use emacs key bindings
+bindkey -e
+
+# History search
+autoload -Uz up-line-or-beginning-search down-line-or-beginning-search
+zle -N up-line-or-beginning-search
+zle -N down-line-or-beginning-search
+
+[[ -n "$key[Up]" ]] && bindkey "$key[Up]" up-line-or-beginning-search
+[[ -n "$key[Down]" ]] && bindkey "$key[Down]" down-line-or-beginning-search
+
+# ============================================================================
+# Final Setup
+# ============================================================================
+
+# Source machine-specific zshrc if it exists (not managed by chezmoi)
+if [ -f "$HOME/.zshrc.local" ]; then
+    source "$HOME/.zshrc.local"
+fi
+
+# Run compinit one more time to ensure everything is loaded
+compinit -d "$HOME/.zsh/cache/.zcompdump-$HOST"

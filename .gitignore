@@ -1,0 +1,17 @@
+# Git ignore file for dotfiles repository
+
+# Machine-specific chezmoi config
+.config/chezmoi/chezmoi.toml
+
+# Temporary files
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Backup files
+*.bak
+*.backup
+
+# Binaries (if not needed in repo)
+# bin/chezmoi

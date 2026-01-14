@@ -1,0 +1,22 @@
+# Chezmoi ignore file
+# Files and patterns to exclude from chezmoi management
+
+# Machine-specific configuration (managed separately)
+.config/chezmoi/chezmoi.toml
+
+# Temporary files
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Git files
+.git/
+.gitignore
+
+# Binaries
+bin/chezmoi
+
+# Backup files
+*.bak
+*.backup
