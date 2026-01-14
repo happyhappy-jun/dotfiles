@@ -251,7 +251,11 @@ forecast() {
 # ============================================================================
 
 # Update system packages (OS-specific)
+# Unalias first to avoid conflicts if alias was set before function
 update() {
+    # Remove alias if it exists (to avoid conflicts)
+    unalias update 2>/dev/null || true
+    
     if [ "$IS_MACOS" = true ]; then
         if command -v brew >/dev/null 2>&1; then
             echo "Updating Homebrew..."

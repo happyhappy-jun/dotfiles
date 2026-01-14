@@ -191,7 +191,8 @@ fi
 
 if [ "$IS_LINUX" = true ]; then
     # Update system packages
-    alias update='sudo apt update && sudo apt upgrade -y'
+    # Note: 'update' is a function defined in functions.sh, so we don't create an alias
+    # The function handles OS-specific updates (apt, yum, dnf, brew, etc.)
     
     # Show hidden files in file manager (if using Nautilus)
     alias showfiles='gsettings set org.gnome.nautilus.preferences show-hidden-files true'
