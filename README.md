@@ -107,6 +107,49 @@ nvm install node
 - Go
 - Starship prompt (if installed)
 
+## Autocomplete
+
+The dotfiles automatically detect and load completion scripts for common tools, providing intelligent tab completion in both zsh and bash.
+
+### Supported Tools
+
+The completion system automatically detects and loads completions for:
+
+- **Version Control**: git, gh (GitHub CLI)
+- **Containers**: docker, docker-compose
+- **Kubernetes**: kubectl
+- **Infrastructure**: terraform, aws-cli
+- **Package Managers**: npm, pip/pip3, brew (Homebrew)
+- **Development Tools**: cargo (Rust), go, chezmoi
+
+### How It Works
+
+1. **Automatic Detection**: The system checks if tools are installed before loading their completions
+2. **Multiple Sources**: Checks common installation locations (system-wide, Homebrew, user-local)
+3. **Auto-Generation**: For tools that support it (kubectl, terraform, gh), completions are automatically generated if not found
+4. **Custom Completions**: Supports custom completions in `~/.zsh/completions/` (zsh) or `~/.bash_completion.d/` (bash)
+
+### Adding Custom Completions
+
+**For Zsh:**
+```bash
+# Place completion files in ~/.zsh/completions/
+# Files should be named _commandname
+mkdir -p ~/.zsh/completions
+# Copy or create your completion file
+cp my_completion.zsh ~/.zsh/completions/_mycommand
+```
+
+**For Bash:**
+```bash
+# Place completion files in ~/.bash_completion.d/
+mkdir -p ~/.bash_completion.d
+# Copy or create your completion file
+cp my_completion.bash ~/.bash_completion.d/mycommand
+```
+
+The completion system will automatically load these on the next shell startup.
+
 ## Aliases
 
 ### File Operations
