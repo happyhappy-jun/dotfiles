@@ -9,14 +9,15 @@ if command -v starship >/dev/null 2>&1; then
     mkdir -p ~/.config 2>/dev/null || true
     if [ ! -f ~/.config/starship.toml ]; then
         starship preset pure-preset -o ~/.config/starship.toml 2>/dev/null || true
-        # Add scan_timeout to prevent hangs on large directories
-        if [ -f ~/.config/starship.toml ]; then
-            # Add scan_timeout if not already present
-            if ! grep -q "scan_timeout" ~/.config/starship.toml 2>/dev/null; then
-                echo "" >> ~/.config/starship.toml
-                echo "[scan_timeout]" >> ~/.config/starship.toml
-                echo "timeout = 2000" >> ~/.config/starship.toml
-            fi
+    fi
+    
+    # Add scan_timeout to prevent hangs on large directories (always check/update)
+    if [ -f ~/.config/starship.toml ]; then
+        # Add scan_timeout if not already present
+        if ! grep -q "scan_timeout" ~/.config/starship.toml 2>/dev/null; then
+            echo "" >> ~/.config/starship.toml
+            echo "[scan_timeout]" >> ~/.config/starship.toml
+            echo "timeout = 2000" >> ~/.config/starship.toml
         fi
     fi
     
