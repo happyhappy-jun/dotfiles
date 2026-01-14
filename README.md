@@ -174,6 +174,8 @@ The completion system will automatically load these on the next shell startup.
 - `cb`, `cbpaste` - Clipboard operations
 - `weather`, `forecast` - Weather information
 - `reload` - Reload shell configuration
+- `env_show` - Show environment variables from .env files (values masked)
+- `env_reload` - Manually reload environment variables
 
 See `dot_common/aliases.sh` for the complete list.
 

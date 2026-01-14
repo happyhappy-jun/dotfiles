@@ -1,0 +1,66 @@
+# Environment Variables Template
+# This file is managed by chezmoi
+# DO NOT include sensitive credentials here - use ~/.config/chezmoi/chezmoi.toml or local .env files
+
+# ============================================================================
+# Base Environment Variables
+# ============================================================================
+
+# User Information
+{{- if .name }}
+USER_NAME="{{ .name }}"
+{{- end }}
+{{- if .email }}
+USER_EMAIL="{{ .email }}"
+{{- end }}
+
+# Development Environment
+# Uncomment and modify as needed
+# DEV_MODE=development
+# DEBUG=false
+# LOG_LEVEL=info
+
+# Application Paths
+# PROJECT_ROOT=~/Projects
+# CODE_DIR=~/Code
+
+# API Endpoints (use local .env for actual credentials)
+# API_BASE_URL=https://api.example.com
+# API_VERSION=v1
+
+# ============================================================================
+# Platform-Specific Variables
+# ============================================================================
+
+{{- if eq .chezmoi.os "darwin" }}
+# macOS specific variables
+# BREW_PREFIX=/opt/homebrew
+{{- else if eq .chezmoi.os "linux" }}
+# Linux specific variables
+# XDG_CONFIG_HOME=$HOME/.config
+{{- end }}
+
+# ============================================================================
+# Tool-Specific Variables
+# ============================================================================
+
+# Git Configuration (if not using global git config)
+# GIT_AUTHOR_NAME="{{ .name }}"
+# GIT_AUTHOR_EMAIL="{{ .email }}"
+
+# Editor
+# EDITOR=vim
+# VISUAL=code
+
+# Language/Region
+# LANG=en_US.UTF-8
+# LC_ALL=en_US.UTF-8
+
+# ============================================================================
+# Notes
+# ============================================================================
+# - This file is a template managed by chezmoi
+# - Sensitive credentials should NOT be stored here
+# - Use ~/.config/chezmoi/chezmoi.toml for machine-specific secrets
+# - Use ./.env in project directories for project-specific overrides
+# - Variables in ./.env will override variables from ~/.env

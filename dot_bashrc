@@ -33,6 +33,7 @@ done
 if [ -n "$COMMON_DIR" ]; then
     [ -f "$COMMON_DIR/paths.sh" ] && source "$COMMON_DIR/paths.sh"
     [ -f "$COMMON_DIR/lazy_load.sh" ] && source "$COMMON_DIR/lazy_load.sh"
+    [ -f "$COMMON_DIR/env_manager.sh" ] && source "$COMMON_DIR/env_manager.sh"
 fi
 
 # ============================================================================
