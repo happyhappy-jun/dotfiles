@@ -29,8 +29,14 @@ _load_pure_prompt() {
     if [ -z "$pure_dir" ]; then
         pure_dir="$HOME/.zsh/pure"
         if [ ! -d "$pure_dir" ]; then
-            mkdir -p "$(dirname "$pure_dir")"
-            git clone --quiet https://github.com/sindresorhus/pure.git "$pure_dir" 2>/dev/null
+            # Use zsh built-in or command to create directory
+            if command -v mkdir >/dev/null 2>&1; then
+                mkdir -p "${pure_dir:h}" 2>/dev/null || mkdir -p "$(dirname "$pure_dir")" 2>/dev/null
+            fi
+            # Clone Pure if git is available
+            if command -v git >/dev/null 2>&1 && [ -d "${pure_dir:h}" ]; then
+                git clone --quiet https://github.com/sindresorhus/pure.git "$pure_dir" 2>/dev/null
+            fi
         fi
     fi
     

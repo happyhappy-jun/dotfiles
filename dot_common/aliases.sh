@@ -54,8 +54,8 @@ alias archives='cd ~/Archives 2>/dev/null || cd ~/archive 2>/dev/null'
 # System Information
 # ============================================================================
 
-# System info (lazy loaded - uses neofetch, screenfetch, or winfetch)
-alias sysinfo='command -v neofetch >/dev/null 2>&1 && neofetch || command -v screenfetch >/dev/null 2>&1 && screenfetch || command -v winfetch >/dev/null 2>&1 && winfetch || echo "No system info tool available"'
+# System info (function defined in functions.sh, no alias to avoid conflict)
+# Use 'sysinfo' function instead of alias
 
 # Process monitoring (lazy loaded)
 alias top='command -v htop >/dev/null 2>&1 && htop || command -v atop >/dev/null 2>&1 && atop || command top'
