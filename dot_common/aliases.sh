@@ -206,9 +206,5 @@ alias hg='history | grep'
 # PATH display (function defined in functions.sh, no alias to avoid conflict)
 # Use 'path' function instead of alias
 
-# Reload shell configuration
-if [ -n "$ZSH_VERSION" ]; then
-    alias reload='source ~/.zshrc'
-elif [ -n "$BASH_VERSION" ]; then
-    alias reload='source ~/.bashrc'
-fi
+# Reload shell configuration (function defined in functions.sh, no alias to avoid conflict)
+# Use 'reload' function instead of alias
