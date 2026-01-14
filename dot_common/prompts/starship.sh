@@ -82,9 +82,10 @@ _init_starship() {
         
         # Reset prompt to default before initializing Starship
         # This prevents conflicts with Pure prompt
-        autoload -Uz promptinit
-        promptinit
-        prompt off 2>/dev/null || true
+        # Use safe error handling to prevent shell exit
+        {
+            autoload -Uz promptinit 2>/dev/null && promptinit 2>/dev/null && prompt off 2>/dev/null
+        } || true
         
         # Ensure Starship config exists with Pure preset
         # Create config directory if it doesn't exist
@@ -94,29 +95,37 @@ _init_starship() {
         # If not, create/update it with Pure preset
         if [ ! -f "$HOME/.config/starship.toml" ]; then
             # Config doesn't exist, create with Pure preset
-            if starship preset pure-preset -o "$HOME/.config/starship.toml" 2>/dev/null; then
-                : # Config created successfully
+            if command -v starship >/dev/null 2>&1; then
+                starship preset pure-preset -o "$HOME/.config/starship.toml" 2>/dev/null || {
+                    # If preset fails, create empty config (Starship will use defaults)
+                    touch "$HOME/.config/starship.toml" 2>/dev/null || true
+                }
             else
-                # If preset fails, create empty config (Starship will use defaults)
+                # Starship not installed yet, create empty config
                 touch "$HOME/.config/starship.toml" 2>/dev/null || true
             fi
         else
             # Config exists - check if it's using Pure preset
             # If config doesn't contain "pure" indicators, update it
-            if ! grep -qE '(format|character|git_branch|git_status|directory).*pure' "$HOME/.config/starship.toml" 2>/dev/null && \
-               ! grep -qE '\[character\]' "$HOME/.config/starship.toml" 2>/dev/null; then
-                # Config exists but doesn't look like Pure preset, update it
-                # Backup existing config first
-                if [ -f "$HOME/.config/starship.toml" ]; then
+            # Use safe grep with proper error handling
+            if command -v starship >/dev/null 2>&1 && [ -f "$HOME/.config/starship.toml" ]; then
+                if ! grep -qE '(format|character|git_branch|git_status|directory).*pure' "$HOME/.config/starship.toml" 2>/dev/null && \
+                   ! grep -qE '\[character\]' "$HOME/.config/starship.toml" 2>/dev/null; then
+                    # Config exists but doesn't look like Pure preset, update it
+                    # Backup existing config first
                     cp "$HOME/.config/starship.toml" "$HOME/.config/starship.toml.bak" 2>/dev/null || true
+                    # Apply Pure preset
+                    starship preset pure-preset -o "$HOME/.config/starship.toml" 2>/dev/null || true
                 fi
-                # Apply Pure preset
-                starship preset pure-preset -o "$HOME/.config/starship.toml" 2>/dev/null || true
             fi
         fi
         
         # Initialize Starship
-        eval "$(starship init zsh)" 2>/dev/null || return 1
+        if command -v starship >/dev/null 2>&1; then
+            eval "$(starship init zsh)" 2>/dev/null || return 1
+        else
+            return 1
+        fi
         return 0
     elif [ -n "$BASH_VERSION" ]; then
         # Bash initialization
@@ -145,20 +154,25 @@ _init_starship() {
         else
             # Config exists - check if it's using Pure preset
             # If config doesn't contain "pure" indicators, update it
-            if ! grep -qE '(format|character|git_branch|git_status|directory).*pure' "$HOME/.config/starship.toml" 2>/dev/null && \
-               ! grep -qE '\[character\]' "$HOME/.config/starship.toml" 2>/dev/null; then
-                # Config exists but doesn't look like Pure preset, update it
-                # Backup existing config first
-                if [ -f "$HOME/.config/starship.toml" ]; then
+            # Use safe grep with proper error handling
+            if command -v starship >/dev/null 2>&1 && [ -f "$HOME/.config/starship.toml" ]; then
+                if ! grep -qE '(format|character|git_branch|git_status|directory).*pure' "$HOME/.config/starship.toml" 2>/dev/null && \
+                   ! grep -qE '\[character\]' "$HOME/.config/starship.toml" 2>/dev/null; then
+                    # Config exists but doesn't look like Pure preset, update it
+                    # Backup existing config first
                     cp "$HOME/.config/starship.toml" "$HOME/.config/starship.toml.bak" 2>/dev/null || true
+                    # Apply Pure preset
+                    starship preset pure-preset -o "$HOME/.config/starship.toml" 2>/dev/null || true
                 fi
-                # Apply Pure preset
-                starship preset pure-preset -o "$HOME/.config/starship.toml" 2>/dev/null || true
             fi
         fi
         
         # Initialize Starship
-        eval "$(starship init bash)" 2>/dev/null || return 1
+        if command -v starship >/dev/null 2>&1; then
+            eval "$(starship init bash)" 2>/dev/null || return 1
+        else
+            return 1
+        fi
         return 0
     fi
     
