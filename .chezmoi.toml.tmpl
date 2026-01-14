@@ -3,12 +3,9 @@
 
 [data]
     # OS detection: "darwin" for macOS, "linux" for Ubuntu
-    # Note: .os is a built-in chezmoi variable, will be set automatically
-    # We don't set it here to avoid init errors
-    
-    # Shell detection: "zsh" or "bash"  
-    # Default to zsh (common on macOS), can be overridden in local config
-    shell = "zsh"
+    # Shell detection based on OS: zsh for macOS, bash for Linux
+    # This uses chezmoi's built-in .chezmoi.os variable
+    shell = {{ if eq .chezmoi.os "darwin" }}"zsh"{{ else }}"bash"{{ end }}
     
     # Architecture - will be set automatically by chezmoi
     # (arch variable available but not set here)
