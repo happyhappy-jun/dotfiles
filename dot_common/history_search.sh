@@ -70,7 +70,7 @@ elif [ -n "$BASH_VERSION" ]; then
     
     # Store the current search string and position
     _HISTORY_SEARCH_STRING=""
-    _HISTORY_SEARCH_INDEX=0
+    _HISTORY_SEARCH_INDEX=-1
     
     # Function to search backward through history
     _history_search_backward() {
@@ -85,24 +85,41 @@ elif [ -n "$BASH_VERSION" ]; then
         # If search string changed, reset index
         if [ "$_HISTORY_SEARCH_STRING" != "$current_line" ]; then
             _HISTORY_SEARCH_STRING="$current_line"
-            _HISTORY_SEARCH_INDEX=$HISTCMD
+            _HISTORY_SEARCH_INDEX=-1
         fi
         
-        # Search backward from current position
-        local found=0
-        local start_index=${_HISTORY_SEARCH_INDEX:-$HISTCMD}
+        # Get history entries using fc command (more reliable)
+        # fc -l -n lists history without line numbers
+        local hist_entries
+        hist_entries=$(fc -l -n 1 2>/dev/null | tac)
         
-        for ((i=start_index-1; i>=1; i--)); do
-            # Get history entry without line number
-            local hist_entry=$(HISTTIMEFORMAT= history $i | sed 's/^[ ]*[0-9]*[ ]*//')
-            if [[ "$hist_entry" == *"$current_line"* ]]; then
+        if [ -z "$hist_entries" ]; then
+            echo -ne '\007'
+            return
+        fi
+        
+        local found=0
+        local skip_first=$((_HISTORY_SEARCH_INDEX >= 0 ? 1 : 0))
+        local count=0
+        
+        # Search through history entries
+        while IFS= read -r hist_entry; do
+            if [ $skip_first -eq 1 ] && [ $count -le $_HISTORY_SEARCH_INDEX ]; then
+                count=$((count + 1))
+                continue
+            fi
+            
+            count=$((count + 1))
+            
+            # Case-insensitive substring match
+            if [[ "${hist_entry,,}" == *"${current_line,,}"* ]]; then
                 READLINE_LINE="$hist_entry"
                 READLINE_POINT=${#READLINE_LINE}
-                _HISTORY_SEARCH_INDEX=$i
+                _HISTORY_SEARCH_INDEX=$count
                 found=1
                 break
             fi
-        done
+        done <<< "$hist_entries"
         
         if [ $found -eq 0 ]; then
             # If no match found, beep
@@ -123,24 +140,39 @@ elif [ -n "$BASH_VERSION" ]; then
         # If search string changed, reset index
         if [ "$_HISTORY_SEARCH_STRING" != "$current_line" ]; then
             _HISTORY_SEARCH_STRING="$current_line"
-            _HISTORY_SEARCH_INDEX=1
+            _HISTORY_SEARCH_INDEX=-1
         fi
         
-        # Search forward from current position
-        local found=0
-        local start_index=${_HISTORY_SEARCH_INDEX:-1}
+        # Get history entries
+        local hist_entries
+        hist_entries=$(fc -l -n 1 2>/dev/null)
         
-        for ((i=start_index+1; i<=HISTCMD; i++)); do
-            # Get history entry without line number
-            local hist_entry=$(HISTTIMEFORMAT= history $i | sed 's/^[ ]*[0-9]*[ ]*//')
-            if [[ "$hist_entry" == *"$current_line"* ]]; then
+        if [ -z "$hist_entries" ]; then
+            echo -ne '\007'
+            return
+        fi
+        
+        local found=0
+        local count=0
+        
+        # Search forward through history entries
+        while IFS= read -r hist_entry; do
+            if [ $_HISTORY_SEARCH_INDEX -ge 0 ] && [ $count -le $_HISTORY_SEARCH_INDEX ]; then
+                count=$((count + 1))
+                continue
+            fi
+            
+            count=$((count + 1))
+            
+            # Case-insensitive substring match
+            if [[ "${hist_entry,,}" == *"${current_line,,}"* ]]; then
                 READLINE_LINE="$hist_entry"
                 READLINE_POINT=${#READLINE_LINE}
-                _HISTORY_SEARCH_INDEX=$i
+                _HISTORY_SEARCH_INDEX=$count
                 found=1
                 break
             fi
-        done
+        done <<< "$hist_entries"
         
         if [ $found -eq 0 ]; then
             # If no match found, beep
@@ -157,7 +189,6 @@ elif [ -n "$BASH_VERSION" ]; then
     bind -x '"\eOA": _history_search_backward' 2>/dev/null || true
     bind -x '"\eOB": _history_search_forward' 2>/dev/null || true
     
-    # Also bind Ctrl-Up and Ctrl-Down as alternatives
-    bind -x '"\e[1;5A": _history_search_backward' 2>/dev/null || true
-    bind -x '"\e[1;5B": _history_search_forward' 2>/dev/null || true
+    # Enable history expansion for better history access
+    set -o history
 fi
