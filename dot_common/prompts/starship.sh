@@ -74,8 +74,28 @@ _init_starship() {
 if ! _init_starship; then
     # Fallback prompts if Starship is not available
     if [ -n "$ZSH_VERSION" ]; then
-        PROMPT='%F{green}%n@%m%f:%F{blue}%~%f$ '
+        # Check if Starship is installed but failed to initialize
+        if command -v starship >/dev/null 2>&1; then
+            # Starship is installed but initialization failed
+            # Try direct initialization as fallback
+            eval "$(starship init zsh)" 2>/dev/null || {
+                PROMPT='%F{green}%n@%m%f:%F{blue}%~%f$ '
+            }
+        else
+            # Starship not installed, use simple prompt
+            PROMPT='%F{green}%n@%m%f:%F{blue}%~%f$ '
+        fi
     elif [ -n "$BASH_VERSION" ]; then
-        export PS1='\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]\$ '
+        # Check if Starship is installed but failed to initialize
+        if command -v starship >/dev/null 2>&1; then
+            # Starship is installed but initialization failed
+            # Try direct initialization as fallback
+            eval "$(starship init bash)" 2>/dev/null || {
+                export PS1='\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]\$ '
+            }
+        else
+            # Starship not installed, use simple prompt
+            export PS1='\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]\$ '
+        fi
     fi
 fi
