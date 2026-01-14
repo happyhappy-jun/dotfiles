@@ -38,22 +38,22 @@ if [ ! -f "$HOME/.tmux.conf" ] || [ -L "$HOME/.tmux.conf" ]; then
     fi
 fi
 
-# Setup .tmux.conf.local symlink (customization file)
-# This should point to the chezmoi-managed file
-CHEZMOI_TMUX_LOCAL=""
-if [ -f "$HOME/.tmux.conf.local" ] && [ ! -L "$HOME/.tmux.conf.local" ]; then
-    # If a regular file exists (not symlink), it might be user's custom file
-    # We'll leave it alone to avoid overwriting user's customizations
-    :
-elif [ ! -f "$HOME/.tmux.conf.local" ]; then
-    # Create symlink to chezmoi-managed file if it exists
-    # The file will be created by chezmoi when dot_tmux.conf.local is applied
-    # For now, we'll create an empty file that chezmoi will manage
-    if [ ! -L "$HOME/.tmux.conf.local" ]; then
-        # Create empty file if chezmoi hasn't created it yet
-        touch "$HOME/.tmux.conf.local" 2>/dev/null || true
-    fi
+# Setup .tmux.conf.local (customization file)
+# Chezmoi manages this file directly, so we ensure it exists
+# Oh my tmux! will source this file automatically
+if [ ! -f "$HOME/.tmux.conf.local" ]; then
+    # Create empty file if it doesn't exist (chezmoi will populate it)
+    touch "$HOME/.tmux.conf.local" 2>/dev/null || true
 fi
 
-# Export TMUX_DIR for potential use in other scripts
+# Export TMUX_DIR and set TMUX_CONF for Oh my tmux! compatibility
 export TMUX_DIR
+export TMUX_CONF="$HOME/.tmux.conf"
+export TMUX_CONF_LOCAL="$HOME/.tmux.conf.local"
+
+# If tmux is running, reload the configuration
+if [ -n "$TMUX" ] && command -v tmux >/dev/null 2>&1; then
+    # Set environment variables in tmux so Oh my tmux! can find the config
+    tmux set-environment -g TMUX_CONF "$HOME/.tmux.conf" 2>/dev/null || true
+    tmux set-environment -g TMUX_CONF_LOCAL "$HOME/.tmux.conf.local" 2>/dev/null || true
+fi
