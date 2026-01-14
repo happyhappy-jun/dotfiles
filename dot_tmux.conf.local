@@ -1,0 +1,59 @@
+# Oh my tmux! local customization file
+# This file is managed by chezmoi and provides the same configuration across all machines
+# Edit this file in the chezmoi source directory, then run 'chezmoi apply' to sync changes
+#
+# In tmux, you can also press <prefix> e to edit this file directly
+# Changes made in tmux will need to be synced back to chezmoi source directory
+
+# ============================================================================
+# Theme Configuration
+# ============================================================================
+
+# Uncomment to enable Powerline look (requires Powerline-compatible font)
+# tmux_conf_theme_left_separator_main='\uE0B0'
+# tmux_conf_theme_left_separator_sub='\uE0B1'
+# tmux_conf_theme_right_separator_main='\uE0B2'
+# tmux_conf_theme_right_separator_sub='\uE0B3'
+
+# ============================================================================
+# Status Bar Configuration
+# ============================================================================
+
+# Customize status bar left side
+# Default: shows session name, hostname, username
+# tmux_conf_theme_status_left=' ❐ #S | ↑#{?uptime_y, #{uptime_y}y,}#{?uptime_d, #{uptime_d}d,}#{?uptime_h, #{uptime_h}h,}#{?uptime_m, #{uptime_m}m,} '
+
+# Customize status bar right side
+# Default: shows date, time, battery, hostname
+# tmux_conf_theme_status_right='#{prefix}#{pairing}#{synchronized} #{?battery_status, #{battery_status},}#{?battery_bar, #{battery_bar},}#{?battery_percentage, #{battery_percentage},} , %R , %d %b | #{username}#{root} | #{hostname} '
+
+# ============================================================================
+# Key Bindings
+# ============================================================================
+
+# Uncomment to preserve stock tmux bindings
+# tmux_conf_preserve_stock_bindings=true
+
+# ============================================================================
+# Window and Pane Configuration
+# ============================================================================
+
+# Window and pane index (0 or 1)
+# tmux_conf_theme_window_status_bg='default'
+# tmux_conf_theme_window_status_fg='default'
+# tmux_conf_theme_window_status_current_bg='red'
+# tmux_conf_theme_window_status_current_fg='black'
+
+# ============================================================================
+# Additional Customizations
+# ============================================================================
+
+# Add your custom tmux configuration here
+# Examples:
+# set -g mouse on                    # Enable mouse mode
+# set -g base-index 1                # Start window numbering at 1
+# setw -g pane-base-index 1         # Start pane numbering at 1
+# set -g history-limit 10000        # Increase history limit
+
+# For more customization options, see:
+# https://github.com/gpakosz/.tmux/blob/master/.tmux.conf.local.example

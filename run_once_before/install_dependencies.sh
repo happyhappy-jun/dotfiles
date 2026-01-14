@@ -27,7 +27,7 @@ if [ "$IS_MACOS" = true ]; then
         echo "Homebrew not found. Install it from https://brew.sh"
     else
         echo "Installing macOS utilities..."
-        brew install neofetch htop || true
+        brew install neofetch htop tmux || true
     fi
     
 elif [ "$IS_LINUX" = true ]; then
@@ -37,13 +37,13 @@ elif [ "$IS_LINUX" = true ]; then
     if command -v apt >/dev/null 2>&1; then
         echo "Installing Linux utilities (apt)..."
         sudo apt update
-        sudo apt install -y neofetch htop xclip || true
+        sudo apt install -y neofetch htop xclip tmux || true
     elif command -v yum >/dev/null 2>&1; then
         echo "Installing Linux utilities (yum)..."
-        sudo yum install -y neofetch htop xclip || true
+        sudo yum install -y neofetch htop xclip tmux || true
     elif command -v dnf >/dev/null 2>&1; then
         echo "Installing Linux utilities (dnf)..."
-        sudo dnf install -y neofetch htop xclip || true
+        sudo dnf install -y neofetch htop xclip tmux || true
     fi
 fi
 
@@ -68,3 +68,6 @@ echo "Note: Some packages may require manual installation."
 echo ""
 echo "Pure prompt will be automatically cloned to ~/.zsh/pure on first use (zsh only)."
 echo "Bash users will get a Pure-inspired prompt automatically."
+echo ""
+echo "Oh my tmux! will be automatically installed via install_tmux_config.sh"
+echo "Run 'chezmoi apply' to set up tmux configuration."

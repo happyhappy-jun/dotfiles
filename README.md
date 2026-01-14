@@ -13,6 +13,7 @@ Cross-platform dotfiles configuration that works seamlessly across macOS (zsh) a
 - **Autocomplete**: Automatically detects and loads completion scripts for common tools
 - **Environment Management**: Hierarchical `.env` file loading with automatic directory-based reloading
 - **Git Auto-Configuration**: Automatically configures git user name and email from environment variables
+- **Tmux Configuration**: Oh my tmux! integration with automatic installation and symlink management
 
 ## Installation
 
@@ -71,7 +72,8 @@ dotfiles/
 │       ├── pure_zsh.sh         # Pure prompt for zsh
 │       └── pure_bash.sh        # Pure-inspired prompt for bash
 ├── run_once_before/            # One-time setup scripts
-│   └── install_dependencies.sh
+│   ├── install_dependencies.sh
+│   └── install_tmux_config.sh # Installs Oh my tmux! repository
 └── README.md                   # This file
 ```
 
@@ -326,6 +328,74 @@ See `dot_common/aliases.sh` for the complete list.
 - `loc [dir]` - Count lines of code
 
 See `dot_common/functions.sh` for the complete list.
+
+## Tmux Configuration
+
+### Oh my tmux!
+
+This dotfiles setup includes [Oh my tmux!](https://github.com/gpakosz/.tmux) - a self-contained, pretty and versatile tmux configuration.
+
+**Features:**
+- Automatic installation via `run_once_before/install_tmux_config.sh`
+- Symlink management via `dot_common/tmux_setup.sh`
+- Customization file (`dot_tmux.conf.local`) managed by chezmoi
+- Same configuration across all machines
+
+**Installation:**
+
+Oh my tmux! is automatically installed when you run:
+```bash
+chezmoi apply
+```
+
+The installation script (`install_tmux_config.sh`) will:
+1. Clone the Oh my tmux! repository to `~/.tmux` (or `~/.config/tmux` if `XDG_CONFIG_HOME` is set)
+2. Create symlinks for `.tmux.conf` and `.tmux.conf.local`
+3. Preserve any existing customizations
+
+**Customization:**
+
+Edit `dot_tmux.conf.local` in your chezmoi source directory:
+```bash
+chezmoi edit ~/.tmux.conf.local
+```
+
+Or edit directly in tmux:
+- Press `<prefix> e` (default prefix is `Ctrl-b`, then press `e`)
+
+After making changes, apply them:
+```bash
+chezmoi apply
+```
+
+**Key Bindings:**
+
+Oh my tmux! provides many useful key bindings:
+- `<prefix> e` - Edit `.tmux.conf.local`
+- `<prefix> r` - Reload tmux configuration
+- `<prefix> |` - Split window vertically
+- `<prefix> -` - Split window horizontally
+- `<prefix> h/j/k/l` - Navigate panes (Vim-style)
+- `<prefix> H/J/K/L` - Resize panes
+- `<prefix> <` and `<prefix> >` - Swap panes
+- `<prefix> +` - Maximize current pane to new window
+- `<prefix> m` - Toggle mouse mode
+
+For a complete list of bindings, see the [Oh my tmux! documentation](https://github.com/gpakosz/.tmux).
+
+**Requirements:**
+
+- tmux >= 2.6
+- awk, perl (with Time::HiRes support), grep, and sed
+- `TERM` environment variable set to `xterm-256color` (outside of tmux)
+
+**Troubleshooting:**
+
+If tmux configuration is not loading:
+1. Check that Oh my tmux! is installed: `ls -la ~/.tmux` or `ls -la ~/.config/tmux`
+2. Verify symlinks exist: `ls -la ~/.tmux.conf ~/.tmux.conf.local`
+3. Check tmux version: `tmux -V` (must be >= 2.6)
+4. Reload tmux config: Press `<prefix> r` in tmux
 
 ## Prompt Theme
 
