@@ -89,9 +89,19 @@ elif [ -n "$BASH_VERSION" ]; then
         fi
         
         # Get history entries using fc command (more reliable)
-        # fc -l -n lists history without line numbers
+        # fc -ln lists history without line numbers, reverse order for backward search
         local hist_entries
-        hist_entries=$(fc -l -n 1 2>/dev/null | tac)
+        if command -v tac >/dev/null 2>&1; then
+            hist_entries=$(fc -ln 1 2>/dev/null | tac)
+        else
+            # Fallback: use tail -r on macOS or sed to reverse
+            if command -v tail >/dev/null 2>&1 && tail -r /dev/null 2>/dev/null; then
+                hist_entries=$(fc -ln 1 2>/dev/null | tail -r)
+            else
+                # Use sed to reverse lines (less efficient but works everywhere)
+                hist_entries=$(fc -ln 1 2>/dev/null | sed '1!G;h;$!d')
+            fi
+        fi
         
         if [ -z "$hist_entries" ]; then
             echo -ne '\007'
@@ -143,9 +153,9 @@ elif [ -n "$BASH_VERSION" ]; then
             _HISTORY_SEARCH_INDEX=-1
         fi
         
-        # Get history entries
+        # Get history entries (forward search, oldest first)
         local hist_entries
-        hist_entries=$(fc -l -n 1 2>/dev/null)
+        hist_entries=$(fc -ln 1 2>/dev/null)
         
         if [ -z "$hist_entries" ]; then
             echo -ne '\007'
