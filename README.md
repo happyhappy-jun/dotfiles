@@ -426,6 +426,14 @@ This dotfiles setup includes the [Pure prompt](https://github.com/sindresorhus/p
 
 Both zsh and bash include enhanced history search functionality that allows you to search through command history by typing part of a command.
 
+**For Zsh:**
+- Uses the official [zsh-history-substring-search](https://github.com/zsh-users/zsh-history-substring-search) plugin
+- Automatically installed on first use via `run_once_before/install_history_search.sh`
+- Located at `~/.zsh/plugins/zsh-history-substring-search/`
+
+**For Bash:**
+- Custom implementation for substring search functionality
+
 **How it works:**
 1. Type part of a command you want to find
 2. Press **Up arrow** to search backward through history for matching commands
@@ -445,14 +453,40 @@ git
 - **Bidirectional search**: Navigate both forward and backward through matching history
 - **Smart reset**: Automatically resets search when you change the search text
 - **Empty line fallback**: If the line is empty, uses normal history navigation
+- **Highlighting**: Matching text is highlighted (zsh only)
+- **Case-insensitive**: Search is case-insensitive by default
+- **Unique results**: Only shows unique history entries (zsh only)
 
 **Key Bindings:**
 - **Up Arrow** (`↑`): Search backward through matching history
 - **Down Arrow** (`↓`): Search forward through matching history
-- **Page Up/Down**: Alternative navigation keys (zsh only)
+- **Ctrl-P/N**: Alternative keys for emacs mode (zsh only)
+- **Ctrl-U**: Abort search (zsh only)
+
+**Installation:**
+The zsh plugin is automatically installed when you run:
+```bash
+chezmoi apply
+# Or manually:
+bash ~/.local/share/chezmoi/run_once_before/install_history_search.sh
+```
+
+**Configuration (Zsh):**
+You can customize the plugin behavior by setting these variables in your `~/.zshrc.local`:
+```zsh
+# Highlight colors
+HISTORY_SUBSTRING_SEARCH_HIGHLIGHT_FOUND='bg=magenta,fg=white,bold'
+HISTORY_SUBSTRING_SEARCH_HIGHLIGHT_NOT_FOUND='bg=red,fg=white,bold'
+
+# Search options
+HISTORY_SUBSTRING_SEARCH_GLOBBING_FLAGS='i'  # Case-insensitive
+HISTORY_SUBSTRING_SEARCH_ENSURE_UNIQUE=1     # Show only unique results
+HISTORY_SUBSTRING_SEARCH_FUZZY=1             # Enable fuzzy search
+```
 
 **Technical Details:**
-- Implemented in `~/.common/history_search.sh`
+- Zsh: Uses [zsh-history-substring-search](https://github.com/zsh-users/zsh-history-substring-search) plugin
+- Bash: Custom implementation in `~/.common/history_search.sh`
 - Automatically loaded by both `~/.zshrc` and `~/.bashrc`
 - Works seamlessly with existing history configuration
 - Compatible with both emacs and vi key bindings

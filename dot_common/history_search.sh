@@ -6,112 +6,59 @@
 if [ -n "$ZSH_VERSION" ]; then
     # ============================================================================
     # Zsh History Substring Search
+    # Uses the official zsh-history-substring-search plugin
+    # https://github.com/zsh-users/zsh-history-substring-search
     # ============================================================================
     
-    # Enable history substring search using zsh's built-in functionality
-    # This allows searching history by typing part of a command and using arrow keys
-    
-    # Store the current search string and position
-    _HISTORY_SUBSTRING_SEARCH_QUERY=""
-    _HISTORY_SUBSTRING_SEARCH_INDEX=0
-    
-    # Function for history substring search (backward)
-    _history_substring_search_backward() {
-        # Get the current line content up to cursor
-        local buffer_text="${BUFFER:0:$CURSOR}"
-        
-        if [ -z "$buffer_text" ]; then
-            # If buffer is empty, use normal history search
-            zle up-line-or-history
-            return
+    # Try multiple possible locations for the plugin
+    HISTORY_SEARCH_PLUGIN=""
+    for dir in \
+        "$HOME/.zsh/plugins/zsh-history-substring-search/zsh-history-substring-search.zsh" \
+        "$HOME/.oh-my-zsh/custom/plugins/zsh-history-substring-search/zsh-history-substring-search.zsh" \
+        "$HOME/.zsh/zsh-history-substring-search/zsh-history-substring-search.zsh" \
+        "/usr/local/share/zsh-history-substring-search/zsh-history-substring-search.zsh" \
+        "/opt/homebrew/share/zsh-history-substring-search/zsh-history-substring-search.zsh"; do
+        if [ -f "$dir" ]; then
+            HISTORY_SEARCH_PLUGIN="$dir"
+            break
         fi
-        
-        # If search string changed, reset search
-        if [ "$_HISTORY_SUBSTRING_SEARCH_QUERY" != "$buffer_text" ]; then
-            _HISTORY_SUBSTRING_SEARCH_QUERY="$buffer_text"
-            _HISTORY_SUBSTRING_SEARCH_INDEX=0
-        fi
-        
-        # Get history size
-        local hist_size=$(fc -l | wc -l)
-        local found=0
-        local start_pos=${_HISTORY_SUBSTRING_SEARCH_INDEX:-$hist_size}
-        
-        # Search backward through history for entries containing the buffer text
-        for ((i=start_pos-1; i>=1; i--)); do
-            local hist_entry=$(fc -l -n $i $i 2>/dev/null | sed 's/^[[:space:]]*//')
-            
-            if [[ "$hist_entry" == *"$buffer_text"* ]]; then
-                BUFFER="$hist_entry"
-                CURSOR=${#BUFFER}
-                _HISTORY_SUBSTRING_SEARCH_INDEX=$i
-                found=1
-                break
-            fi
-        done
-        
-        if [ $found -eq 0 ]; then
-            # If no match found, beep
-            zle beep
-        fi
-    }
+    done
     
-    # Function for history substring search (forward)
-    _history_substring_search_forward() {
-        # Get the current line content up to cursor
-        local buffer_text="${BUFFER:0:$CURSOR}"
+    # Load the plugin if found
+    if [ -n "$HISTORY_SEARCH_PLUGIN" ]; then
+        source "$HISTORY_SEARCH_PLUGIN"
         
-        if [ -z "$buffer_text" ]; then
-            # If buffer is empty, use normal history search
-            zle down-line-or-history
-            return
-        fi
+        # Bind keys for history substring search
+        # Try multiple key codes for different terminal types
+        bindkey '^[[A' history-substring-search-up      # Up arrow (most terminals)
+        bindkey '^[[B' history-substring-search-down    # Down arrow (most terminals)
+        bindkey '^[OA' history-substring-search-up     # Up arrow (some terminals)
+        bindkey '^[OB' history-substring-search-down    # Down arrow (some terminals)
         
-        # If search string changed, reset search
-        if [ "$_HISTORY_SUBSTRING_SEARCH_QUERY" != "$buffer_text" ]; then
-            _HISTORY_SUBSTRING_SEARCH_QUERY="$buffer_text"
-            local hist_size=$(fc -l | wc -l)
-            _HISTORY_SUBSTRING_SEARCH_INDEX=$hist_size
-        fi
+        # Also bind Ctrl-P/N for emacs mode
+        bindkey -M emacs '^P' history-substring-search-up
+        bindkey -M emacs '^N' history-substring-search-down
         
-        # Get history size
-        local hist_size=$(fc -l | wc -l)
-        local found=0
-        local start_pos=${_HISTORY_SUBSTRING_SEARCH_INDEX:-1}
+        # Configuration options
+        # Highlight found matches
+        HISTORY_SUBSTRING_SEARCH_HIGHLIGHT_FOUND='bg=magenta,fg=white,bold'
+        # Highlight when no matches found
+        HISTORY_SUBSTRING_SEARCH_HIGHLIGHT_NOT_FOUND='bg=red,fg=white,bold'
+        # Case-insensitive search
+        HISTORY_SUBSTRING_SEARCH_GLOBBING_FLAGS='i'
+        # Ensure unique results
+        HISTORY_SUBSTRING_SEARCH_ENSURE_UNIQUE=1
+    else
+        # Fallback: Use built-in zsh history search if plugin not found
+        autoload -Uz up-line-or-beginning-search down-line-or-beginning-search
+        zle -N up-line-or-beginning-search
+        zle -N down-line-or-beginning-search
         
-        # Search forward through history for entries containing the buffer text
-        for ((i=start_pos+1; i<=hist_size; i++)); do
-            local hist_entry=$(fc -l -n $i $i 2>/dev/null | sed 's/^[[:space:]]*//')
-            
-            if [[ "$hist_entry" == *"$buffer_text"* ]]; then
-                BUFFER="$hist_entry"
-                CURSOR=${#BUFFER}
-                _HISTORY_SUBSTRING_SEARCH_INDEX=$i
-                found=1
-                break
-            fi
-        done
-        
-        if [ $found -eq 0 ]; then
-            # If no match found, beep
-            zle beep
-        fi
-    }
-    
-    # Create zle widgets
-    zle -N _history_substring_search_backward
-    zle -N _history_substring_search_forward
-    
-    # Bind to Up and Down arrow keys
-    # Try multiple key codes for different terminal types
-    bindkey '^[[A' _history_substring_search_backward   # Up arrow (most terminals)
-    bindkey '^[[B' _history_substring_search_forward   # Down arrow (most terminals)
-    bindkey '^[OA' _history_substring_search_backward   # Up arrow (some terminals)
-    bindkey '^[OB' _history_substring_search_forward   # Down arrow (some terminals)
-    
-    # Also bind to Page Up/Down for alternative navigation
-    bindkey '^[[5~' _history_substring_search_backward   # Page Up
-    bindkey '^[[6~' _history_substring_search_forward   # Page Down
+        bindkey '^[[A' up-line-or-beginning-search
+        bindkey '^[[B' down-line-or-beginning-search
+        bindkey '^[OA' up-line-or-beginning-search
+        bindkey '^[OB' down-line-or-beginning-search
+    fi
     
 elif [ -n "$BASH_VERSION" ]; then
     # ============================================================================

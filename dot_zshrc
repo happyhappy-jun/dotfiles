@@ -237,22 +237,18 @@ fi
 # Use emacs key bindings
 bindkey -e
 
-# History search (enhanced with substring search)
+# ============================================================================
+# History Substring Search
+# ============================================================================
+
 # Load history substring search functionality
+# Uses zsh-history-substring-search plugin for zsh
 if [ -n "$COMMON_DIR" ] && [ -f "$COMMON_DIR/history_search.sh" ]; then
     source "$COMMON_DIR/history_search.sh"
 elif [ -f "$HOME/.common/history_search.sh" ]; then
     source "$HOME/.common/history_search.sh"
 elif [ -f "$HOME/dot_common/history_search.sh" ]; then
     source "$HOME/dot_common/history_search.sh"
-else
-    # Fallback to standard history search
-    autoload -Uz up-line-or-beginning-search down-line-or-beginning-search
-    zle -N up-line-or-beginning-search
-    zle -N down-line-or-beginning-search
-    
-    [[ -n "$key[Up]" ]] && bindkey "$key[Up]" up-line-or-beginning-search
-    [[ -n "$key[Down]" ]] && bindkey "$key[Down]" down-line-or-beginning-search
 fi
 
 # ============================================================================
