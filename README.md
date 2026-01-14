@@ -414,14 +414,15 @@ This dotfiles setup uses [Starship](https://starship.rs/) - a fast, customizable
 
 **Installation:**
 
-Starship is automatically installed on first use via `run_once_before/install_starship.sh`. You can also install it manually:
+Starship is automatically installed on first use via `run_once_before_install_starship.sh` (managed by chezmoi). You can also install it manually:
 
 ```bash
-# Run the installation script
-bash ~/.local/share/chezmoi/run_once_before/install_starship.sh
+# The installation scripts run automatically when you run:
+chezmoi apply
 
-# Set up Pure preset configuration
-bash ~/.local/share/chezmoi/run_once_before/setup_starship_config.sh
+# Or manually run them:
+bash ~/.local/share/chezmoi/run_once_before_install_starship.sh
+bash ~/.local/share/chezmoi/run_once_before_setup_starship_config.sh
 ```
 
 Or install manually from [Starship installation guide](https://starship.rs/guide/).

@@ -13,12 +13,12 @@ _install_starship() {
     echo "Starship not found. Installing Starship..."
     
     # Try to find and run the installation script
+    # Note: chezmoi manages run_once_before_ scripts automatically
+    # This is a fallback if the script hasn't been run yet
     local install_script=""
     for script_path in \
-        "$HOME/.local/share/chezmoi/run_once_before/install_starship.sh" \
-        "$(chezmoi source-path 2>/dev/null)/run_once_before/install_starship.sh" \
-        "$HOME/.common/run_once_before/install_starship.sh" \
-        "$HOME/dot_common/run_once_before/install_starship.sh"; do
+        "$(chezmoi source-path 2>/dev/null)/run_once_before_install_starship.sh" \
+        "$HOME/.local/share/chezmoi/run_once_before_install_starship.sh"; do
         if [ -f "$script_path" ]; then
             install_script="$script_path"
             break

@@ -51,10 +51,10 @@ fi
 # Starship is the primary prompt system used in this dotfiles setup
 if ! command -v starship >/dev/null 2>&1; then
     echo "Installing Starship prompt..."
-    if [ -f "$(chezmoi source-path 2>/dev/null)/run_once_before/install_starship.sh" ]; then
-        bash "$(chezmoi source-path)/run_once_before/install_starship.sh"
-    elif [ -f "$HOME/.local/share/chezmoi/run_once_before/install_starship.sh" ]; then
-        bash "$HOME/.local/share/chezmoi/run_once_before/install_starship.sh"
+    if [ -f "$(chezmoi source-path 2>/dev/null)/run_once_before_install_starship.sh" ]; then
+        bash "$(chezmoi source-path)/run_once_before_install_starship.sh"
+    elif [ -f "$HOME/.local/share/chezmoi/run_once_before_install_starship.sh" ]; then
+        bash "$HOME/.local/share/chezmoi/run_once_before_install_starship.sh"
     else
         echo "Starship installation script not found. Install manually from https://starship.rs"
         echo "Or run: curl -sS https://starship.rs/install.sh | sh"
@@ -64,10 +64,10 @@ fi
 # Set up Starship configuration with Pure preset
 if command -v starship >/dev/null 2>&1; then
     echo "Setting up Starship configuration..."
-    if [ -f "$(chezmoi source-path 2>/dev/null)/run_once_before/setup_starship_config.sh" ]; then
-        bash "$(chezmoi source-path)/run_once_before/setup_starship_config.sh"
-    elif [ -f "$HOME/.local/share/chezmoi/run_once_before/setup_starship_config.sh" ]; then
-        bash "$HOME/.local/share/chezmoi/run_once_before/setup_starship_config.sh"
+    if [ -f "$(chezmoi source-path 2>/dev/null)/run_once_before_setup_starship_config.sh" ]; then
+        bash "$(chezmoi source-path)/run_once_before_setup_starship_config.sh"
+    elif [ -f "$HOME/.local/share/chezmoi/run_once_before_setup_starship_config.sh" ]; then
+        bash "$HOME/.local/share/chezmoi/run_once_before_setup_starship_config.sh"
     fi
 fi
 
