@@ -3,19 +3,19 @@
 
 [data]
     # OS detection: "darwin" for macOS, "linux" for Ubuntu
-    os = "{{ .os }}"
+    os = "{{ .os | default "unknown" }}"
     
     # Shell detection: "zsh" or "bash"
-    shell = {{ if eq .os "darwin" }}"zsh"{{ else }}"bash"{{ end }}
+    shell = {{ if and .os (eq .os "darwin") }}"zsh"{{ else }}"bash"{{ end }}
     
     # Architecture
-    arch = "{{ .arch }}"
+    arch = "{{ .arch | default "unknown" }}"
     
     # Home directory
-    homeDir = "{{ .chezmoi.homeDir }}"
+    homeDir = "{{ .chezmoi.homeDir | default "" }}"
     
     # Source directory
-    sourceDir = "{{ .chezmoi.sourceDir }}"
+    sourceDir = "{{ .chezmoi.sourceDir | default "" }}"
     
     # Machine-specific variables (can be overridden in ~/.config/chezmoi/chezmoi.toml)
     email = "{{ .email | default "" }}"
