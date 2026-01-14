@@ -135,11 +135,11 @@ if [ -d "$HOME/.rbenv" ]; then
     add_to_path "$RBENV_ROOT/bin"
 fi
 
-# Conda paths (miniconda/anaconda)
+# Conda paths (miniconda3/anaconda3)
 # Note: Conda initialization is lazy-loaded, but we can add the base path here
 # for commands that might be called directly
-if [ -d "$HOME/miniconda" ]; then
-    export CONDA_HOME="$HOME/miniconda"
+if [ -d "$HOME/miniconda3" ]; then
+    export CONDA_HOME="$HOME/miniconda3"
     # Don't add to PATH here - conda init will handle it
     # But ensure conda binary is accessible for lazy loading
     if [ -f "$CONDA_HOME/bin/conda" ]; then
@@ -149,8 +149,9 @@ if [ -d "$HOME/miniconda" ]; then
             export CONDA_BIN="$CONDA_HOME/bin/conda"
         fi
     fi
-elif [ -d "$HOME/anaconda" ]; then
-    export CONDA_HOME="$HOME/anaconda"
+elif [ -d "$HOME/miniconda" ]; then
+    # Fallback for older miniconda installations
+    export CONDA_HOME="$HOME/miniconda"
     if [ -f "$CONDA_HOME/bin/conda" ]; then
         if [[ ":$PATH:" != *":$CONDA_HOME/bin:"* ]]; then
             export CONDA_BIN="$CONDA_HOME/bin/conda"
@@ -158,6 +159,14 @@ elif [ -d "$HOME/anaconda" ]; then
     fi
 elif [ -d "$HOME/anaconda3" ]; then
     export CONDA_HOME="$HOME/anaconda3"
+    if [ -f "$CONDA_HOME/bin/conda" ]; then
+        if [[ ":$PATH:" != *":$CONDA_HOME/bin:"* ]]; then
+            export CONDA_BIN="$CONDA_HOME/bin/conda"
+        fi
+    fi
+elif [ -d "$HOME/anaconda" ]; then
+    # Fallback for older anaconda installations
+    export CONDA_HOME="$HOME/anaconda"
     if [ -f "$CONDA_HOME/bin/conda" ]; then
         if [[ ":$PATH:" != *":$CONDA_HOME/bin:"* ]]; then
             export CONDA_BIN="$CONDA_HOME/bin/conda"

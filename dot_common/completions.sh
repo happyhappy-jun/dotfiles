@@ -353,15 +353,17 @@ fi
 # ============================================================================
 # Conda Completion
 # ============================================================================
-if _has_command conda || [ -d "$HOME/miniconda" ] || [ -d "$HOME/anaconda" ] || [ -d "$HOME/anaconda3" ]; then
-    # Determine conda location
+if _has_command conda || [ -d "$HOME/miniconda3" ] || [ -d "$HOME/miniconda" ] || [ -d "$HOME/anaconda3" ] || [ -d "$HOME/anaconda" ]; then
+    # Determine conda location (check miniconda3 first, then fallbacks)
     local conda_dir=""
-    if [ -d "$HOME/miniconda" ]; then
+    if [ -d "$HOME/miniconda3" ]; then
+        conda_dir="$HOME/miniconda3"
+    elif [ -d "$HOME/miniconda" ]; then
         conda_dir="$HOME/miniconda"
-    elif [ -d "$HOME/anaconda" ]; then
-        conda_dir="$HOME/anaconda"
     elif [ -d "$HOME/anaconda3" ]; then
         conda_dir="$HOME/anaconda3"
+    elif [ -d "$HOME/anaconda" ]; then
+        conda_dir="$HOME/anaconda"
     fi
     
     if [ -n "$conda_dir" ] && [ -f "$conda_dir/etc/profile.d/conda.sh" ]; then
