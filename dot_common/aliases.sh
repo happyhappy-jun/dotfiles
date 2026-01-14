@@ -204,8 +204,8 @@ alias cl='clear'
 alias h='history'
 alias hg='history | grep'
 
-# PATH display
-alias path='echo -e ${PATH//:/\\n}'
+# PATH display (function defined in functions.sh, no alias to avoid conflict)
+# Use 'path' function instead of alias
 
 # Reload shell configuration
 if [ -n "$ZSH_VERSION" ]; then
