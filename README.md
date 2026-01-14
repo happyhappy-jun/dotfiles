@@ -9,6 +9,7 @@ Cross-platform dotfiles configuration that works seamlessly across macOS (zsh) a
 - **Feature Parity**: Same aliases, functions, and utilities work in both environments
 - **Chezmoi Integration**: Easy synchronization across machines using chezmoi
 - **OS-Aware**: Automatically detects and adapts to the operating system
+- **Pure Prompt**: Beautiful minimal prompt for zsh (auto-installs) and Pure-inspired prompt for bash
 
 ## Installation
 
@@ -213,6 +214,29 @@ Create `~/.bashrc.local` or `~/.zshrc.local` (not tracked by git) for local cust
 2. Commit and push changes
 3. Run `chezmoi apply` on all machines
 
+## Prompt Theme
+
+### Pure Prompt
+
+This dotfiles setup includes the [Pure prompt](https://github.com/sindresorhus/pure) for zsh and a Pure-inspired prompt for bash.
+
+**For Zsh (macOS):**
+- Pure prompt is automatically cloned from GitHub on first use
+- Located at `~/.zsh/pure/`
+- Features: Git status, branch info, execution time, minimal design
+
+**For Bash (Linux):**
+- Pure-inspired prompt with similar features
+- Shows git branch, dirty status, and arrows
+- Minimal, clean design matching Pure's aesthetic
+
+**Customization:**
+- Pure (zsh): Configure via `zstyle` commands in `~/.zshrc.local`
+- Pure-inspired (bash): Edit `~/.common/prompts/pure_bash.sh`
+
+**Fallback:**
+- If Pure fails to load, falls back to Starship (if installed) or simple prompt
+
 ## Performance
 
 ### Startup Time Optimization
@@ -220,6 +244,7 @@ Create `~/.bashrc.local` or `~/.zshrc.local` (not tracked by git) for local cust
 - **Lazy Loading**: Heavy tools load only when needed
 - **Deferred Completion**: Completion system optimized for speed
 - **Minimal Early Loading**: Only essential configuration loads at startup
+- **Fast Prompt**: Pure prompt is lightweight and fast
 
 ### Measuring Startup Time
 
