@@ -324,10 +324,14 @@ backup() {
 
 # Reload shell configuration
 # Unalias first to avoid conflicts if alias was set before function
-reload() {
-    # Remove alias if it exists (to avoid conflicts)
+# This must be done BEFORE defining the function in zsh
+if [ -n "$ZSH_VERSION" ]; then
     unalias reload 2>/dev/null || true
-    
+elif [ -n "$BASH_VERSION" ]; then
+    unalias reload 2>/dev/null || true
+fi
+
+reload() {
     if [ -n "$ZSH_VERSION" ]; then
         source ~/.zshrc
         echo "Zsh configuration reloaded"

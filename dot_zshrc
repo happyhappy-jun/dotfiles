@@ -200,6 +200,8 @@ _load_common_config() {
     
     if [ -n "$COMMON_DIR" ]; then
         [ -f "$COMMON_DIR/aliases.sh" ] && source "$COMMON_DIR/aliases.sh"
+        # Unalias reload before loading functions.sh to prevent conflicts
+        unalias reload 2>/dev/null || true
         [ -f "$COMMON_DIR/functions.sh" ] && source "$COMMON_DIR/functions.sh"
     fi
 }
