@@ -2,7 +2,8 @@
 # One-time setup script for installing dependencies
 # This script can be run manually or via chezmoi run_once_before
 
-set -e
+# Don't exit on error - we want to continue even if some installations fail
+set +e
 
 echo "Installing dotfiles dependencies..."
 
@@ -33,17 +34,40 @@ if [ "$IS_MACOS" = true ]; then
 elif [ "$IS_LINUX" = true ]; then
     echo "Detected Linux"
     
+    # Check if sudo is available
+    HAS_SUDO=false
+    if command -v sudo >/dev/null 2>&1 && sudo -n true 2>/dev/null; then
+        HAS_SUDO=true
+    elif command -v sudo >/dev/null 2>&1; then
+        # sudo exists but may require password - check if we can use it
+        HAS_SUDO=true
+    fi
+    
     # Install utilities based on package manager
     if command -v apt >/dev/null 2>&1; then
-        echo "Installing Linux utilities (apt)..."
-        sudo apt update
-        sudo apt install -y neofetch htop xclip tmux || true
+        if [ "$HAS_SUDO" = true ]; then
+            echo "Installing Linux utilities (apt)..."
+            sudo apt update && sudo apt install -y neofetch htop xclip tmux || true
+        else
+            echo "Skipping apt package installation (sudo not available or requires password)"
+            echo "You can install manually: apt install neofetch htop xclip tmux"
+        fi
     elif command -v yum >/dev/null 2>&1; then
-        echo "Installing Linux utilities (yum)..."
-        sudo yum install -y neofetch htop xclip tmux || true
+        if [ "$HAS_SUDO" = true ]; then
+            echo "Installing Linux utilities (yum)..."
+            sudo yum install -y neofetch htop xclip tmux || true
+        else
+            echo "Skipping yum package installation (sudo not available or requires password)"
+            echo "You can install manually: yum install neofetch htop xclip tmux"
+        fi
     elif command -v dnf >/dev/null 2>&1; then
-        echo "Installing Linux utilities (dnf)..."
-        sudo dnf install -y neofetch htop xclip tmux || true
+        if [ "$HAS_SUDO" = true ]; then
+            echo "Installing Linux utilities (dnf)..."
+            sudo dnf install -y neofetch htop xclip tmux || true
+        else
+            echo "Skipping dnf package installation (sudo not available or requires password)"
+            echo "You can install manually: dnf install neofetch htop xclip tmux"
+        fi
     fi
 fi
 

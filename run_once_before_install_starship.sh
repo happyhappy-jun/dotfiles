@@ -45,38 +45,50 @@ if command -v starship >/dev/null 2>&1; then
     exit 0
 fi
 
+# Check if sudo is available
+HAS_SUDO=false
+if command -v sudo >/dev/null 2>&1 && sudo -n true 2>/dev/null; then
+    HAS_SUDO=true
+elif command -v sudo >/dev/null 2>&1; then
+    # sudo exists but may require password - we'll try but won't fail if it requires password
+    HAS_SUDO=true
+fi
+
 # Try to install using package managers first (Linux only)
 # macOS will use the official installer script
 if [ "$IS_LINUX" = true ]; then
-    # Linux: Try system package managers
-    if command -v apt >/dev/null 2>&1; then
-        # Debian/Ubuntu
-        if [ -f /etc/debian_version ]; then
-            DEBIAN_VERSION=$(cat /etc/debian_version | cut -d. -f1)
-            UBUNTU_VERSION=$(lsb_release -rs 2>/dev/null | cut -d. -f1 || echo "0")
-            if [ "$UBUNTU_VERSION" -ge 25 ] || [ "$DEBIAN_VERSION" -ge 13 ] 2>/dev/null; then
-                echo "Installing Starship via apt..."
-                sudo apt update && sudo apt install -y starship && exit 0
+    # Linux: Try system package managers (only if sudo is available)
+    if [ "$HAS_SUDO" = true ]; then
+        if command -v apt >/dev/null 2>&1; then
+            # Debian/Ubuntu
+            if [ -f /etc/debian_version ]; then
+                DEBIAN_VERSION=$(cat /etc/debian_version | cut -d. -f1)
+                UBUNTU_VERSION=$(lsb_release -rs 2>/dev/null | cut -d. -f1 || echo "0")
+                if [ "$UBUNTU_VERSION" -ge 25 ] || [ "$DEBIAN_VERSION" -ge 13 ] 2>/dev/null; then
+                    echo "Installing Starship via apt..."
+                    sudo apt update && sudo apt install -y starship && exit 0
+                fi
             fi
+        elif command -v pacman >/dev/null 2>&1; then
+            # Arch Linux
+            echo "Installing Starship via pacman..."
+            sudo pacman -S --noconfirm starship && exit 0
+        elif command -v dnf >/dev/null 2>&1; then
+            # Fedora/CentOS
+            echo "Installing Starship via dnf (Copr)..."
+            sudo dnf copr enable atim/starship -y && sudo dnf install -y starship && exit 0
+        elif command -v apk >/dev/null 2>&1; then
+            # Alpine Linux
+            echo "Installing Starship via apk..."
+            sudo apk add starship && exit 0
+        elif command -v zypper >/dev/null 2>&1; then
+            # openSUSE
+            echo "Installing Starship via zypper..."
+            sudo zypper install -y starship && exit 0
         fi
-    elif command -v pacman >/dev/null 2>&1; then
-        # Arch Linux
-        echo "Installing Starship via pacman..."
-        sudo pacman -S --noconfirm starship && exit 0
-    elif command -v dnf >/dev/null 2>&1; then
-        # Fedora/CentOS
-        echo "Installing Starship via dnf (Copr)..."
-        sudo dnf copr enable atim/starship -y && sudo dnf install -y starship && exit 0
-    elif command -v apk >/dev/null 2>&1; then
-        # Alpine Linux
-        echo "Installing Starship via apk..."
-        sudo apk add starship && exit 0
-    elif command -v zypper >/dev/null 2>&1; then
-        # openSUSE
-        echo "Installing Starship via zypper..."
-        sudo zypper install -y starship && exit 0
-    elif command -v nix-env >/dev/null 2>&1; then
-        # NixOS
+    fi
+    # NixOS doesn't require sudo
+    if command -v nix-env >/dev/null 2>&1; then
         echo "Installing Starship via nix-env..."
         nix-env -iA nixpkgs.starship && exit 0
     fi
