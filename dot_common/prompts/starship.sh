@@ -25,8 +25,20 @@ _init_starship() {
         promptinit
         prompt off 2>/dev/null || true
         
+        # Ensure Starship config exists (create with Pure preset if missing)
+        if [ ! -f "$HOME/.config/starship.toml" ]; then
+            # Try to create config with Pure preset
+            if starship preset pure-preset -o "$HOME/.config/starship.toml" 2>/dev/null; then
+                : # Config created successfully
+            else
+                # If preset fails, create empty config (Starship will use defaults)
+                mkdir -p "$HOME/.config" 2>/dev/null || true
+                touch "$HOME/.config/starship.toml" 2>/dev/null || true
+            fi
+        fi
+        
         # Initialize Starship
-        eval "$(starship init zsh)"
+        eval "$(starship init zsh)" 2>/dev/null || return 1
         return 0
     elif [ -n "$BASH_VERSION" ]; then
         # Bash initialization
@@ -38,8 +50,20 @@ _init_starship() {
             PROMPT_COMMAND="${PROMPT_COMMAND#;}"
         fi
         
+        # Ensure Starship config exists (create with Pure preset if missing)
+        if [ ! -f "$HOME/.config/starship.toml" ]; then
+            # Try to create config with Pure preset
+            if starship preset pure-preset -o "$HOME/.config/starship.toml" 2>/dev/null; then
+                : # Config created successfully
+            else
+                # If preset fails, create empty config (Starship will use defaults)
+                mkdir -p "$HOME/.config" 2>/dev/null || true
+                touch "$HOME/.config/starship.toml" 2>/dev/null || true
+            fi
+        fi
+        
         # Initialize Starship
-        eval "$(starship init bash)"
+        eval "$(starship init bash)" 2>/dev/null || return 1
         return 0
     fi
     
