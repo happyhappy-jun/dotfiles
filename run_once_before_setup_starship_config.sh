@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
-# Set up Starship configuration with Pure preset and scan_timeout
-# This script configures Starship to use the Pure preset theme
+# Set up Starship configuration
+# NOTE: The config is now managed by chezmoi at dot_config/starship.toml
+# This script only runs if the chezmoi-managed config doesn't exist yet
 
 set -e
 
@@ -18,14 +19,13 @@ fi
 
 STARSHIP_CONFIG_FILE="$STARSHIP_CONFIG_DIR/starship.toml"
 
-# Check if config already exists
+# If config already exists (managed by chezmoi), skip setup
 if [ -f "$STARSHIP_CONFIG_FILE" ]; then
-    echo "Starship config already exists at $STARSHIP_CONFIG_FILE"
-    echo "Backing up existing config to ${STARSHIP_CONFIG_FILE}.bak"
-    cp "$STARSHIP_CONFIG_FILE" "${STARSHIP_CONFIG_FILE}.bak"
+    echo "Starship config already exists at $STARSHIP_CONFIG_FILE (managed by chezmoi)"
+    exit 0
 fi
 
-# Generate Pure preset configuration
+# Generate Pure preset configuration as fallback
 echo "Setting up Starship with Pure preset..."
 starship preset pure-preset -o "$STARSHIP_CONFIG_FILE"
 
