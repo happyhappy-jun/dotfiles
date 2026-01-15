@@ -258,8 +258,8 @@ fi
 
 # Load git-subrepo if installed (Git Submodule Alternative)
 # https://github.com/ingydotnet/git-subrepo
-if [ -f "$HOME/.git-subrepo/.rc" ]; then
-    source "$HOME/.git-subrepo/.rc"
+if [ -f "$HOME/.local/share/dotfiles/git-subrepo/.rc" ]; then
+    source "$HOME/.local/share/dotfiles/git-subrepo/.rc"
 fi
 
 # ============================================================================

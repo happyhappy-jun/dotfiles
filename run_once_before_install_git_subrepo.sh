@@ -4,7 +4,9 @@
 
 set +e
 
-GIT_SUBREPO_DIR="$HOME/.git-subrepo"
+# Use centralized dotfiles deps directory
+DOTFILES_DEPS_DIR="$HOME/.local/share/dotfiles"
+GIT_SUBREPO_DIR="$DOTFILES_DEPS_DIR/git-subrepo"
 
 echo "Installing git-subrepo..."
 
@@ -13,6 +15,9 @@ if ! command -v git >/dev/null 2>&1; then
     echo "Git is not installed. Please install git first."
     exit 1
 fi
+
+# Create deps directory if it doesn't exist
+mkdir -p "$DOTFILES_DEPS_DIR"
 
 # Check if already installed
 if [ -d "$GIT_SUBREPO_DIR" ]; then

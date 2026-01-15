@@ -100,7 +100,8 @@ fi
 
 # Install git-subrepo (Git Submodule Alternative)
 # https://github.com/ingydotnet/git-subrepo
-if [ ! -d "$HOME/.git-subrepo" ]; then
+# Installed to ~/.local/share/dotfiles/git-subrepo
+if [ ! -d "$HOME/.local/share/dotfiles/git-subrepo" ]; then
     echo "Installing git-subrepo..."
     if [ -f "$(chezmoi source-path 2>/dev/null)/run_once_before_install_git_subrepo.sh" ]; then
         bash "$(chezmoi source-path)/run_once_before_install_git_subrepo.sh"
@@ -108,7 +109,7 @@ if [ ! -d "$HOME/.git-subrepo" ]; then
         bash "$HOME/.local/share/chezmoi/run_once_before_install_git_subrepo.sh"
     else
         echo "git-subrepo installation script not found."
-        echo "Install manually: git clone https://github.com/ingydotnet/git-subrepo ~/.git-subrepo"
+        echo "Install manually: git clone https://github.com/ingydotnet/git-subrepo ~/.local/share/dotfiles/git-subrepo"
     fi
 else
     echo "git-subrepo already installed."
