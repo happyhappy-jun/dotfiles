@@ -62,143 +62,21 @@ if [ -n "$ZSH_VERSION" ]; then
     
 elif [ -n "$BASH_VERSION" ]; then
     # ============================================================================
-    # Bash History Substring Search
+    # Bash History Search
     # ============================================================================
     
-    # Enable history substring search for bash
-    # This allows searching history by typing part of a command and using arrow keys
+    # Enable history search for bash
+    # Type a few characters and press Up/Down arrow to search through history
+    # matching commands that start with those characters
     
-    # Store the current search string and position
-    _HISTORY_SEARCH_STRING=""
-    _HISTORY_SEARCH_INDEX=-1
-    
-    # Function to search backward through history
-    _history_search_backward() {
-        local current_line="${READLINE_LINE:0:$READLINE_POINT}"
-        
-        if [ -z "$current_line" ]; then
-            # If line is empty, use normal history search
-            bind '"\e[A": history-search-backward'
-            return
-        fi
-        
-        # If search string changed, reset index
-        if [ "$_HISTORY_SEARCH_STRING" != "$current_line" ]; then
-            _HISTORY_SEARCH_STRING="$current_line"
-            _HISTORY_SEARCH_INDEX=-1
-        fi
-        
-        # Get history entries using fc command (more reliable)
-        # fc -ln lists history without line numbers, reverse order for backward search
-        local hist_entries
-        if command -v tac >/dev/null 2>&1; then
-            hist_entries=$(fc -ln 1 2>/dev/null | tac)
-        else
-            # Fallback: use tail -r on macOS or sed to reverse
-            if command -v tail >/dev/null 2>&1 && tail -r /dev/null 2>/dev/null; then
-                hist_entries=$(fc -ln 1 2>/dev/null | tail -r)
-            else
-                # Use sed to reverse lines (less efficient but works everywhere)
-                hist_entries=$(fc -ln 1 2>/dev/null | sed '1!G;h;$!d')
-            fi
-        fi
-        
-        if [ -z "$hist_entries" ]; then
-            echo -ne '\007'
-            return
-        fi
-        
-        local found=0
-        local skip_first=$((_HISTORY_SEARCH_INDEX >= 0 ? 1 : 0))
-        local count=0
-        
-        # Search through history entries
-        while IFS= read -r hist_entry; do
-            if [ $skip_first -eq 1 ] && [ $count -le $_HISTORY_SEARCH_INDEX ]; then
-                count=$((count + 1))
-                continue
-            fi
-            
-            count=$((count + 1))
-            
-            # Case-insensitive substring match
-            if [[ "${hist_entry,,}" == *"${current_line,,}"* ]]; then
-                READLINE_LINE="$hist_entry"
-                READLINE_POINT=${#READLINE_LINE}
-                _HISTORY_SEARCH_INDEX=$count
-                found=1
-                break
-            fi
-        done <<< "$hist_entries"
-        
-        if [ $found -eq 0 ]; then
-            # If no match found, beep
-            echo -ne '\007'
-        fi
-    }
-    
-    # Function to search forward through history
-    _history_search_forward() {
-        local current_line="${READLINE_LINE:0:$READLINE_POINT}"
-        
-        if [ -z "$current_line" ]; then
-            # If line is empty, use normal history search
-            bind '"\e[B": history-search-forward'
-            return
-        fi
-        
-        # If search string changed, reset index
-        if [ "$_HISTORY_SEARCH_STRING" != "$current_line" ]; then
-            _HISTORY_SEARCH_STRING="$current_line"
-            _HISTORY_SEARCH_INDEX=-1
-        fi
-        
-        # Get history entries (forward search, oldest first)
-        local hist_entries
-        hist_entries=$(fc -ln 1 2>/dev/null)
-        
-        if [ -z "$hist_entries" ]; then
-            echo -ne '\007'
-            return
-        fi
-        
-        local found=0
-        local count=0
-        
-        # Search forward through history entries
-        while IFS= read -r hist_entry; do
-            if [ $_HISTORY_SEARCH_INDEX -ge 0 ] && [ $count -le $_HISTORY_SEARCH_INDEX ]; then
-                count=$((count + 1))
-                continue
-            fi
-            
-            count=$((count + 1))
-            
-            # Case-insensitive substring match
-            if [[ "${hist_entry,,}" == *"${current_line,,}"* ]]; then
-                READLINE_LINE="$hist_entry"
-                READLINE_POINT=${#READLINE_LINE}
-                _HISTORY_SEARCH_INDEX=$count
-                found=1
-                break
-            fi
-        done <<< "$hist_entries"
-        
-        if [ $found -eq 0 ]; then
-            # If no match found, beep
-            echo -ne '\007'
-        fi
-    }
-    
-    # Bind to Up and Down arrow keys using readline
-    # Use bind -x to execute shell functions
-    bind -x '"\e[A": _history_search_backward'
-    bind -x '"\e[B": _history_search_forward'
-    
-    # Also try alternative key codes for different terminals
-    bind -x '"\eOA": _history_search_backward' 2>/dev/null || true
-    bind -x '"\eOB": _history_search_forward' 2>/dev/null || true
-    
-    # Enable history expansion for better history access
-    set -o history
+    # Bind Up/Down arrow keys to history-search-backward/forward
+    # This searches history for commands starting with the current line prefix
+    if [[ ${SHELLOPTS} =~ (vi|emacs) ]]; then
+        # Standard terminal escape codes
+        bind '"\e[A": history-search-backward'
+        bind '"\e[B": history-search-forward'
+        # Alternative escape codes (some terminals)
+        bind '"\eOA": history-search-backward'
+        bind '"\eOB": history-search-forward'
+    fi
 fi
