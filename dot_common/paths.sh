@@ -62,6 +62,36 @@ add_to_path_end() {
     fi
 }
 
+# Function to display all PATH entries (one per line)
+path() {
+    echo "$PATH" | tr ':' '\n' | nl
+}
+
+# Function to load custom paths from ~/.paths file
+load_custom_paths() {
+    local paths_file="${1:-$HOME/.paths}"
+    
+    if [ ! -f "$paths_file" ]; then
+        return 0
+    fi
+    
+    while IFS= read -r line || [ -n "$line" ]; do
+        # Skip empty lines and comments
+        [[ -z "$line" ]] && continue
+        [[ "$line" =~ ^[[:space:]]*# ]] && continue
+        
+        # Trim whitespace
+        line="${line#"${line%%[![:space:]]*}"}"
+        line="${line%"${line##*[![:space:]]}"}"
+        
+        # Expand ~ to home directory
+        line="${line/#\~/$HOME}"
+        
+        # Add to PATH if directory exists
+        add_to_path "$line"
+    done < "$paths_file"
+}
+
 # Detect OS
 if [[ "$OSTYPE" == "darwin"* ]]; then
     # macOS specific paths
@@ -173,3 +203,6 @@ elif [ -d "$HOME/anaconda" ]; then
         fi
     fi
 fi
+
+# Load custom paths from ~/.paths (user-defined paths)
+load_custom_paths
