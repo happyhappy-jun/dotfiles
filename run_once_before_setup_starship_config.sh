@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Set up Starship configuration with Pure preset
+# Set up Starship configuration with Pure preset and scan_timeout
 # This script configures Starship to use the Pure preset theme
 
 set -e
@@ -30,6 +30,13 @@ echo "Setting up Starship with Pure preset..."
 starship preset pure-preset -o "$STARSHIP_CONFIG_FILE"
 
 if [ -f "$STARSHIP_CONFIG_FILE" ]; then
+    # Add scan_timeout at root level (prepend to file) to prevent hanging on large directories
+    echo "Adding scan_timeout configuration..."
+    echo "scan_timeout = 2000" > "${STARSHIP_CONFIG_FILE}.new"
+    echo "" >> "${STARSHIP_CONFIG_FILE}.new"
+    cat "$STARSHIP_CONFIG_FILE" >> "${STARSHIP_CONFIG_FILE}.new"
+    mv "${STARSHIP_CONFIG_FILE}.new" "$STARSHIP_CONFIG_FILE"
+    
     echo "Starship configured successfully with Pure preset!"
     echo "Config file: $STARSHIP_CONFIG_FILE"
 else

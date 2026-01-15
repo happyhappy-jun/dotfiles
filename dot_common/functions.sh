@@ -56,16 +56,8 @@ extract() {
 # ============================================================================
 
 # Display PATH entries on separate lines
-# Unset/unalias path first to avoid conflicts (path might be a variable or alias)
-if [ -n "$ZSH_VERSION" ]; then
-    unalias path 2>/dev/null || true
-    unset -f path 2>/dev/null || true
-elif [ -n "$BASH_VERSION" ]; then
-    unalias path 2>/dev/null || true
-    unset -f path 2>/dev/null || true
-fi
-
-path() {
+# Named showpath to avoid conflicts with 'path' variable/alias in some systems
+showpath() {
     echo -e "${PATH//:/\\n}"
 }
 

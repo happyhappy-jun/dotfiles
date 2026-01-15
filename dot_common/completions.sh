@@ -355,7 +355,7 @@ fi
 # ============================================================================
 if _has_command conda || [ -d "$HOME/miniconda3" ] || [ -d "$HOME/miniconda" ] || [ -d "$HOME/anaconda3" ] || [ -d "$HOME/anaconda" ]; then
     # Determine conda location (check miniconda3 first, then fallbacks)
-    local conda_dir=""
+    conda_dir=""
     if [ -d "$HOME/miniconda3" ]; then
         conda_dir="$HOME/miniconda3"
     elif [ -d "$HOME/miniconda" ]; then
