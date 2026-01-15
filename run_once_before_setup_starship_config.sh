@@ -37,6 +37,36 @@ if [ -f "$STARSHIP_CONFIG_FILE" ]; then
     cat "$STARSHIP_CONFIG_FILE" >> "${STARSHIP_CONFIG_FILE}.new"
     mv "${STARSHIP_CONFIG_FILE}.new" "$STARSHIP_CONFIG_FILE"
     
+    # Add Python virtual environment display
+    echo "Adding Python virtual environment configuration..."
+    cat >> "$STARSHIP_CONFIG_FILE" << 'EOF'
+
+# Python virtual environment
+[python]
+format = 'via [${symbol}${pyenv_prefix}(${version} )(\($virtualenv\) )]($style)'
+symbol = "🐍 "
+style = "yellow bold"
+pyenv_version_name = true
+detect_extensions = ["py"]
+detect_files = [".python-version", "Pipfile", "__pycache__", "pyproject.toml", "requirements.txt", "setup.py", "tox.ini"]
+detect_folders = [".venv", "venv", ".virtualenv"]
+
+# Conda environment
+[conda]
+format = '[$symbol$environment]($style) '
+symbol = "🅒 "
+style = "green bold"
+ignore_base = true
+
+# Node.js (useful for JS projects)
+[nodejs]
+format = 'via [$symbol($version )]($style)'
+symbol = "⬢ "
+style = "green bold"
+detect_files = ["package.json", ".node-version", ".nvmrc"]
+detect_folders = ["node_modules"]
+EOF
+    
     echo "Starship configured successfully with Pure preset!"
     echo "Config file: $STARSHIP_CONFIG_FILE"
 else
