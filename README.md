@@ -12,6 +12,7 @@ Cross-platform shell configuration managed by [chezmoi](https://www.chezmoi.io/)
 - **Modern prompt**: [Starship](https://starship.rs/) with Pure preset
 - **Tmux integration**: [Oh My Tmux](https://github.com/gpakosz/.tmux) configuration
 - **History search**: Substring search with arrow keys
+- **Git subrepo**: [git-subrepo](https://github.com/ingydotnet/git-subrepo) for better submodule management
 
 ## Quick Start
 
@@ -206,8 +207,17 @@ email = "your@email.com"
 ## Requirements
 
 - **Shell**: Bash 4+ or Zsh 5+
+- **Git**: Version 2.23+ (required for git-subrepo)
 - **chezmoi**: Automatically installed if not present
 - **Optional**: starship, htop, neofetch
+
+## Included Tools
+
+The following tools are automatically installed:
+
+- **[Starship](https://starship.rs/)**: Cross-shell prompt with Pure preset
+- **[git-subrepo](https://github.com/ingydotnet/git-subrepo)**: Git submodule alternative - simpler workflow for managing nested repositories
+- **[Oh My Tmux](https://github.com/gpakosz/.tmux)**: Pretty and versatile tmux configuration
 
 ## License
 

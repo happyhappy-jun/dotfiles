@@ -98,6 +98,22 @@ if command -v starship >/dev/null 2>&1; then
     fi
 fi
 
+# Install git-subrepo (Git Submodule Alternative)
+# https://github.com/ingydotnet/git-subrepo
+if [ ! -d "$HOME/.git-subrepo" ]; then
+    echo "Installing git-subrepo..."
+    if [ -f "$(chezmoi source-path 2>/dev/null)/run_once_before_install_git_subrepo.sh" ]; then
+        bash "$(chezmoi source-path)/run_once_before_install_git_subrepo.sh"
+    elif [ -f "$HOME/.local/share/chezmoi/run_once_before_install_git_subrepo.sh" ]; then
+        bash "$HOME/.local/share/chezmoi/run_once_before_install_git_subrepo.sh"
+    else
+        echo "git-subrepo installation script not found."
+        echo "Install manually: git clone https://github.com/ingydotnet/git-subrepo ~/.git-subrepo"
+    fi
+else
+    echo "git-subrepo already installed."
+fi
+
 echo "Dependency installation complete!"
 echo "Note: Some packages may require manual installation."
 echo ""
