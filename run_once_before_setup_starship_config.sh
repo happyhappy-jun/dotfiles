@@ -43,10 +43,10 @@ if [ -f "$STARSHIP_CONFIG_FILE" ]; then
     # The Pure preset has: [python]\nformat = "[$virtualenv]($style) "\nstyle = "bright-black"\ndetect_extensions = []\ndetect_files = []
     sed -i.tmp '/^\[python\]$/,/^$/c\
 [python]\
-format = "via [${symbol}${pyenv_prefix}(${version} )(\\($virtualenv\\) )]($style)"\
+format = "via [${symbol}(${version} )]($style)"\
 symbol = "🐍 "\
 style = "yellow bold"\
-pyenv_version_name = true\
+pyenv_version_name = false\
 detect_extensions = ["py"]\
 detect_files = [".python-version", "Pipfile", "__pycache__", "pyproject.toml", "requirements.txt", "setup.py", "tox.ini"]\
 detect_folders = [".venv", "venv", ".virtualenv"]\
