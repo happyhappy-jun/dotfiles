@@ -42,21 +42,28 @@ if command -v starship >/dev/null 2>&1; then
             cp ~/.config/starship.toml ~/.config/starship.toml.bak 2>/dev/null || true
             starship preset pure-preset -o ~/.config/starship.toml 2>/dev/null || true
         fi
-        # Ensure scan_timeout is set correctly (as a number, not a table)
-        # Fix incorrect table format if present
-        if grep -qE '\[scan_timeout\]' ~/.config/starship.toml 2>/dev/null; then
-            # Create a temporary file without the incorrect scan_timeout table
-            grep -vE '\[scan_timeout\]' ~/.config/starship.toml 2>/dev/null | \
-            grep -vE '^\s*timeout\s*=' 2>/dev/null > ~/.config/starship.toml.tmp 2>/dev/null || true
+        # Ensure scan_timeout is set correctly (as a number at root level, not in any section)
+        # Remove ALL occurrences of scan_timeout (from any section) and [scan_timeout] table
+        # Then add it only at root level
+        if [ -f ~/.config/starship.toml ]; then
+            # Remove all scan_timeout-related lines (both root and section-level)
+            # Also remove [scan_timeout] table section
+            grep -vE '^\s*scan_timeout\s*=' ~/.config/starship.toml 2>/dev/null | \
+            grep -vE '^\s*timeout\s*=' 2>/dev/null | \
+            grep -vE '\[scan_timeout\]' 2>/dev/null > ~/.config/starship.toml.tmp 2>/dev/null || true
+            
             if [ -f ~/.config/starship.toml.tmp ]; then
                 mv ~/.config/starship.toml.tmp ~/.config/starship.toml 2>/dev/null || true
             fi
-        fi
-        # Add scan_timeout as a number if it doesn't exist
-        if ! grep -qE '^scan_timeout\s*=' ~/.config/starship.toml 2>/dev/null && \
-           ! grep -qE '^\s*scan_timeout\s*=' ~/.config/starship.toml 2>/dev/null; then
-            echo "" >> ~/.config/starship.toml 2>/dev/null || true
-            echo "scan_timeout = 2000" >> ~/.config/starship.toml 2>/dev/null || true
+            
+            # Add scan_timeout at root level (at the beginning of the file) if it doesn't exist
+            if ! grep -qE '^scan_timeout\s*=' ~/.config/starship.toml 2>/dev/null; then
+                # Always add at the beginning of the file (root level)
+                echo "scan_timeout = 2000" > ~/.config/starship.toml.tmp 2>/dev/null || true
+                echo "" >> ~/.config/starship.toml.tmp 2>/dev/null || true
+                cat ~/.config/starship.toml >> ~/.config/starship.toml.tmp 2>/dev/null || true
+                mv ~/.config/starship.toml.tmp ~/.config/starship.toml 2>/dev/null || true
+            fi
         fi
     fi
     
