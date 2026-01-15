@@ -37,19 +37,26 @@ if [ -f "$STARSHIP_CONFIG_FILE" ]; then
     cat "$STARSHIP_CONFIG_FILE" >> "${STARSHIP_CONFIG_FILE}.new"
     mv "${STARSHIP_CONFIG_FILE}.new" "$STARSHIP_CONFIG_FILE"
     
-    # Add Python virtual environment display
-    echo "Adding Python virtual environment configuration..."
-    cat >> "$STARSHIP_CONFIG_FILE" << 'EOF'
-
-# Python virtual environment
-[python]
-format = 'via [${symbol}${pyenv_prefix}(${version} )(\($virtualenv\) )]($style)'
-symbol = "🐍 "
-style = "yellow bold"
-pyenv_version_name = true
-detect_extensions = ["py"]
-detect_files = [".python-version", "Pipfile", "__pycache__", "pyproject.toml", "requirements.txt", "setup.py", "tox.ini"]
-detect_folders = [".venv", "venv", ".virtualenv"]
+    # Replace the Pure preset's minimal [python] section with enhanced version
+    echo "Updating Python virtual environment configuration..."
+    # Use sed to replace the existing [python] section
+    # The Pure preset has: [python]\nformat = "[$virtualenv]($style) "\nstyle = "bright-black"\ndetect_extensions = []\ndetect_files = []
+    sed -i.tmp '/^\[python\]$/,/^$/c\
+[python]\
+format = "via [${symbol}${pyenv_prefix}(${version} )(\\($virtualenv\\) )]($style)"\
+symbol = "🐍 "\
+style = "yellow bold"\
+pyenv_version_name = true\
+detect_extensions = ["py"]\
+detect_files = [".python-version", "Pipfile", "__pycache__", "pyproject.toml", "requirements.txt", "setup.py", "tox.ini"]\
+detect_folders = [".venv", "venv", ".virtualenv"]\
+' "$STARSHIP_CONFIG_FILE"
+    rm -f "${STARSHIP_CONFIG_FILE}.tmp"
+    
+    # Add Conda and Node.js sections if they don't exist
+    echo "Adding Conda and Node.js configuration..."
+    if ! grep -q '^\[conda\]' "$STARSHIP_CONFIG_FILE"; then
+        cat >> "$STARSHIP_CONFIG_FILE" << 'EOF'
 
 # Conda environment
 [conda]
@@ -57,6 +64,11 @@ format = '[$symbol$environment]($style) '
 symbol = "🅒 "
 style = "green bold"
 ignore_base = true
+EOF
+    fi
+    
+    if ! grep -q '^\[nodejs\]' "$STARSHIP_CONFIG_FILE"; then
+        cat >> "$STARSHIP_CONFIG_FILE" << 'EOF'
 
 # Node.js (useful for JS projects)
 [nodejs]
@@ -66,6 +78,7 @@ style = "green bold"
 detect_files = ["package.json", ".node-version", ".nvmrc"]
 detect_folders = ["node_modules"]
 EOF
+    fi
     
     echo "Starship configured successfully with Pure preset!"
     echo "Config file: $STARSHIP_CONFIG_FILE"
