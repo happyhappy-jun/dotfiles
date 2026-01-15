@@ -190,7 +190,19 @@ fi
 # ============================================================================
 
 # Load Starship prompt (https://starship.rs/)
-eval "$(starship init bash)"
+# Uses Pure preset theme for a clean, minimal look
+if [ -n "$COMMON_DIR" ] && [ -f "$COMMON_DIR/prompts/starship.sh" ]; then
+    source "$COMMON_DIR/prompts/starship.sh"
+elif [ -f "$HOME/.common/prompts/starship.sh" ]; then
+    source "$HOME/.common/prompts/starship.sh"
+elif [ -f "$HOME/dot_common/prompts/starship.sh" ]; then
+    source "$HOME/dot_common/prompts/starship.sh"
+else
+    # Fallback: Try starship directly if available
+    if command -v starship >/dev/null 2>&1; then
+        eval "$(starship init bash)"
+    fi
+fi
 
 # ============================================================================
 # History Substring Search
