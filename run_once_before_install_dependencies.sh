@@ -115,6 +115,15 @@ else
     echo "git-subrepo already installed."
 fi
 
+# Install Poetry (Python dependency management)
+# https://python-poetry.org/docs/#installation
+if ! command -v poetry >/dev/null 2>&1; then
+    echo "Installing Poetry..."
+    curl -sSL https://install.python-poetry.org | python3 - || true
+else
+    echo "Poetry already installed."
+fi
+
 echo "Dependency installation complete!"
 echo "Note: Some packages may require manual installation."
 echo ""
