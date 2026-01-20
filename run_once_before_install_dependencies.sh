@@ -124,6 +124,15 @@ else
     echo "Poetry already installed."
 fi
 
+# Install uv (Python package installer)
+# https://github.com/astral-sh/uv
+if ! command -v uv >/dev/null 2>&1; then
+    echo "Installing uv..."
+    curl -LsSf https://astral.sh/uv/install.sh | sh || true
+else
+    echo "uv already installed."
+fi
+
 echo "Dependency installation complete!"
 echo "Note: Some packages may require manual installation."
 echo ""
