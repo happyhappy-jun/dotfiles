@@ -197,11 +197,11 @@ _configure_git_from_env() {
     fi
 }
 
-# Initial load
-_reload_env
-
-# Configure git from environment variables after loading
-_configure_git_from_env
+# Initial load: only load if ~/.env exists (avoids 2x git config calls on NFS on every shell start)
+# Git config is updated lazily when directory changes via PROMPT_COMMAND
+if [ -f "$HOME/.env" ]; then
+    _load_env_file "$HOME/.env"
+fi
 
 # Export functions for use in shell (bash)
 if [ -n "$BASH_VERSION" ]; then

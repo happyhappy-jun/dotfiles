@@ -21,9 +21,9 @@ if [ -z "$PATH" ] || [ "$PATH" = "" ] || [[ "$PATH" != *"/usr/bin"* ]] || [[ "$P
 fi
 
 # Source common paths first (lightweight)
-# Try multiple locations to support different chezmoi setups
+# Try local locations first; skip chezmoi source-path (slow NFS call)
 COMMON_DIR=""
-for dir in "$HOME/.common" "$HOME/dot_common" "$(chezmoi source-path 2>/dev/null)/dot_common"; do
+for dir in "$HOME/.common" "$HOME/dot_common"; do
     if [ -d "$dir" ]; then
         COMMON_DIR="$dir"
         break
@@ -125,16 +125,6 @@ fi
 
 # Function to lazy load common aliases and functions
 _load_common_config() {
-    # Find common directory (reuse if already found)
-    if [ -z "$COMMON_DIR" ]; then
-        for dir in "$HOME/.common" "$HOME/dot_common" "$(chezmoi source-path 2>/dev/null)/dot_common"; do
-            if [ -d "$dir" ]; then
-                COMMON_DIR="$dir"
-                break
-            fi
-        done
-    fi
-    
     if [ -n "$COMMON_DIR" ]; then
         [ -f "$COMMON_DIR/aliases.sh" ] && source "$COMMON_DIR/aliases.sh"
         [ -f "$COMMON_DIR/functions.sh" ] && source "$COMMON_DIR/functions.sh"
@@ -231,6 +221,22 @@ fi
 # ============================================================================
 # Final Setup
 # ============================================================================
+
+# Lazy-load conda: replaces the eager 'conda init' block that conda appends.
+# Run 'conda init' once to regenerate if you need conda active on shell start.
+# conda shell.bash hook is intentionally deferred to avoid ~500ms NFS cost.
+if [ -d "$HOME/miniconda3" ] && [ -z "$CONDA_SHLVL" ]; then
+    _conda_lazy_init() {
+        unset -f conda _conda_lazy_init
+        local conda_sh="$HOME/miniconda3/etc/profile.d/conda.sh"
+        if [ -f "$conda_sh" ]; then
+            . "$conda_sh"
+        else
+            export PATH="$HOME/miniconda3/bin:$PATH"
+        fi
+    }
+    conda() { _conda_lazy_init; conda "$@"; }
+fi
 
 # Source machine-specific bashrc if it exists (not managed by chezmoi)
 if [ -f "$HOME/.bashrc.local" ]; then

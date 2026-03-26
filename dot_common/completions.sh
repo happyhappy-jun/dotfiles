@@ -308,29 +308,12 @@ fi
 # ============================================================================
 # docker-compose v2 (as plugin) Completion
 # ============================================================================
-if _has_command docker && docker compose version >/dev/null 2>&1; then
+# Only load cached completion - avoids spawning 'docker compose version' on every shell start
+if _has_command docker; then
     if [[ -n "$ZSH_VERSION" ]]; then
-        # Docker Compose v2 completion (plugin)
-        if [ -f "$HOME/.docker-compose-completion.zsh" ]; then
-            _load_completion "$HOME/.docker-compose-completion.zsh"
-        else
-            # Generate completion
-            if docker compose completion zsh >/dev/null 2>&1; then
-                docker compose completion zsh > "$HOME/.docker-compose-completion.zsh" 2>/dev/null && \
-                _load_completion "$HOME/.docker-compose-completion.zsh"
-            fi
-        fi
+        _load_completion "$HOME/.docker-compose-completion.zsh"
     else
-        # Bash: Docker Compose v2 completion
-        if [ -f "$HOME/.docker-compose-completion.bash" ]; then
-            _load_completion "$HOME/.docker-compose-completion.bash"
-        else
-            # Generate completion
-            if docker compose completion bash >/dev/null 2>&1; then
-                docker compose completion bash > "$HOME/.docker-compose-completion.bash" 2>/dev/null && \
-                _load_completion "$HOME/.docker-compose-completion.bash"
-            fi
-        fi
+        _load_completion "$HOME/.docker-compose-completion.bash"
     fi
 fi
 
